@@ -1,4 +1,5 @@
-# libpiplates The C library for the PI-Plates I/O boards made for Raspberry PI
+# C library for the PI-Plates I/O boards
+## made for Raspberry PI (libpiplates)
 
 ## API overview
 
