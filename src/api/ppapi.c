@@ -601,14 +601,16 @@ int initConfig(const uint8_t spiChannel, const uint8_t wpiPinINT, const uint8_t 
     if(g_first_call == 0)
     {
         g_first_call = 1;
-
+#ifdef PP_DEBUG
         printf(
             ":: PI-Plates C API %s.%s Build %d\n"
             ":: Copyright (c) 2016-2017 by B. Eschrich (EoF)\n",
             PP_UBUNTU_VERSION_STYLE, PP_STATUS_SHORT, PP_BUILDS_COUNT);
-
+#endif // PP_DEBUG
         // BCM pin layout root mode
+#ifdef PP_DEBUG
         puts("Initialize wiringPi to GPIO BCM pin layout...");
+#endif // PP_DEBUG
         wiringPiSetupGpio();
     }
 
@@ -635,25 +637,13 @@ int initBoards(uint8_t type, const config_t* pConfig)
 
     verifyPointer(pConfig);
 
-    if(g_first_call == 0)
-    {
-        g_first_call = 1;
-
-        printf(
-            "** \\w/ PI Plates C API %s.%s Build %d \\w/ **\n"
-            "Copyright (c) 2016-2017 by B. Eschrich (EoF)\n",
-            PP_UBUNTU_VERSION_STYLE, PP_STATUS_SHORT, PP_BUILDS_COUNT);
-
-        // BCM pin layout root mode
-        puts("Initialize GPIO BCM pin layout...");
-        wiringPiSetupGpio();
-    }
-
+#ifdef PP_DEBUG
     printf("Board type........: %d\n", type);
     printf("Interrupt pin.....: %d\n", pConfig->pinInterrupt);
     printf("Frame control pin.: %d\n", pConfig->pinFrameControl);
     printf("Board base address: %d\n", pConfig->boardBaseAddr);
     printf("SPI channel.......: %d\n", pConfig->spiChannel);
+#endif // PP_DEBUG
 
     // clear available board list first time
     if(g_board_count == 0)
@@ -671,7 +661,9 @@ int initBoards(uint8_t type, const config_t* pConfig)
     board->type = type;
 
     // Initialize frame signal
+#ifdef PP_DEBUG
     puts("Initialize frame signal...");
+#endif // PP_DEBUG
     pinMode(pConfig->pinFrameControl, OUTPUT);
 
     // lock SPI frame transfer
@@ -681,14 +673,18 @@ int initBoards(uint8_t type, const config_t* pConfig)
     }
 
     // Initialize interrupt control
+#ifdef PP_DEBUG
     puts("Initialize interrupt signal...");
+#endif // PP_DEBUG
     pinMode(pConfig->pinInterrupt, INPUT);
     pullUpDnControl(pConfig->pinInterrupt, PUD_UP);
 
     // time to system
     usleep(PP_DELAY);
 
-    printf("Determine available boards of type #%d...\n", type);
+#ifdef PP_DEBUG
+	printf("Determine available boards of type #%d...\n", type);
+#endif // PP_DEBUG
 
     uint8_t i;
     uint8_t index = 0;
@@ -714,7 +710,9 @@ int initBoards(uint8_t type, const config_t* pConfig)
         int rc = (addr - pConfig->boardBaseAddr);
         if(rc == i)
         {
+#ifdef PP_DEBUG
             printf("Found board type %d at address: %d\n", type, i);
+#endif // PP_DEBUG
             // save board configuration at end of list
             memcpy(&g_board_list[g_board_count], &tstbrd, sizeof(board_t));
             // set new allocated board
@@ -732,7 +730,9 @@ int initBoards(uint8_t type, const config_t* pConfig)
     }
 
     // force board reset to available boards
+#ifdef PP_DEBUG
     printf("Reset available boards of type %d ...\n", type);
+#endif // PP_DEBUG
     for(i = 0; i < g_board_count; i++)
     {
         if(g_board_list[i].type == type)
