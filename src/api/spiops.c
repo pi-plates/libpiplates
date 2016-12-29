@@ -32,11 +32,11 @@
 #pragma GCC diagnostic ignored "-Wunused-function"
 
 /* Enable/Disable I/O trace */
-//#ifdef TRACE_SPI_OPS
-//#define __TRACE_SPI_OPS			1
-//#else
+#ifdef TRACE_SPI_OPS
+#define __TRACE_SPI_OPS			1
+#else
 #define __TRACE_SPI_OPS			0
-//#endif
+#endif
 
 /* SPI device initialization parameters */
 #define PP_SPI_BUS_SPEED		500000
