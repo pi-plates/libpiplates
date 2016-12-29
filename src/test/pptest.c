@@ -40,9 +40,9 @@ static int testRelayBoard()
 {
     config_t config;
 
-	puts("=================================================");
-	puts("RELAYplate test");
-	puts("=================================================");
+    puts("=================================================");
+    puts("RELAYplate test");
+    puts("=================================================");
 
     // Initialize GPIO / SPI addresses for the RELAYplate
     if(initConfig(PP_SPI_IO_CHANNEL, 3, 6, 24, &config) < 0)
@@ -112,9 +112,10 @@ static int testRelayBoard()
 
         usleep(220000);
 
-        if (getRelayState(board, &state) < 0) {
+        if(getRelayState(board, &state) < 0)
+        {
             pabort("\nGet relay state failed.");
-			return EXIT_FAILURE;
+            return EXIT_FAILURE;
         }
         printf("states: 0x%x\n", state);
 
@@ -127,7 +128,8 @@ static int testRelayBoard()
 
         usleep(220000);
 
-        if (getRelayState(board, &state) < 0) {
+        if(getRelayState(board, &state) < 0)
+        {
             pabort("\nGet relay state failed.");
             return EXIT_FAILURE;
         }
@@ -179,9 +181,9 @@ int testDAQCBoard()
 {
     config_t config;
 
-	puts("=================================================");
-	puts("DAQCplate test");
-	puts("=================================================");
+    puts("=================================================");
+    puts("DAQCplate test");
+    puts("=================================================");
 
     // Initialize GPIO / SPI addresses for the DAQCplate
     if(initConfig(PP_SPI_IO_CHANNEL, 3, 6, 8, &config) < 0)
@@ -230,10 +232,11 @@ int testDAQCBoard()
     }
     printf("Firmware Revision: %s\n", revision);
 
-	if (calcDAC(board) < 0) {
+    if(calcDAC(board) < 0)
+    {
         pabort("calDAC() failed.");
         return EXIT_FAILURE;
-	}
+    }
     printf("Board VCC........: %2.3f\n", board->vcc);
 
     updateLED(board, 0, STATE_OFF);
@@ -248,139 +251,156 @@ int testDAQCBoard()
     updateLED(board, 0, STATE_OFF);
     updateLED(board, 1, STATE_TOGGLE);
 
-	uint16_t flags = 0;
-	if (getINTflags(board, &flags) < 0) {
-		pabort("getINTflags() failed");
+    uint16_t flags = 0;
+    if(getINTflags(board, &flags) < 0)
+    {
+        pabort("getINTflags() failed");
         return EXIT_FAILURE;
-	}
+    }
     printf("INT flags........: 0x%04x\n", flags);
 
-	float range = 0.0f;
+    float range = 0.0f;
 
-	if (getRange(board, 0, 'i', &range) < 0)
-	{
-		pabort("getRange(0, i) failed");
+    if(getRange(board, 0, 'i', &range) < 0)
+    {
+        pabort("getRange(0, i) failed");
         return EXIT_FAILURE;
-	}
+    }
     printf("Range(0,i).......: %4.2f\n", range);
 
-	if (getRange(board, 0, 'c', &range) < 0)
-	{
-		pabort("getRange(0, c) failed");
+    if(getRange(board, 0, 'c', &range) < 0)
+    {
+        pabort("getRange(0, c) failed");
         return EXIT_FAILURE;
-	}
+    }
     printf("Range(0,c).......: %4.2f\n", range);
 
-/*	--> Both calls failing ?!
-	if (getRange(board, 1, 'i', &range) < 0)
-	{
-		pabort("getRange(1, i) failed");
-        return EXIT_FAILURE;
-	}
-    printf("Range(1,i).......: %4.2f\n", range);
+    /*	--> Both calls failing ?!
+    	if (getRange(board, 1, 'i', &range) < 0)
+    	{
+    		pabort("getRange(1, i) failed");
+            return EXIT_FAILURE;
+    	}
+        printf("Range(1,i).......: %4.2f\n", range);
 
-	if (getRange(board, 1, 'c', &range) < 0)
-	{
-		pabort("getRange(1, c) failed");
-        return EXIT_FAILURE;
-	}
-    printf("Range(1,c).......: %4.2f\n", range);
-*/
+    	if (getRange(board, 1, 'c', &range) < 0)
+    	{
+    		pabort("getRange(1, c) failed");
+            return EXIT_FAILURE;
+    	}
+        printf("Range(1,c).......: %4.2f\n", range);
+    */
 
-	float data = 0.0f;
+    float data = 0.0f;
 
-	if (getADC(board, 0, &data) < 0) {
-		pabort("getADC(0) failed");
+    if(getADC(board, 0, &data) < 0)
+    {
+        pabort("getADC(0) failed");
         return EXIT_FAILURE;
-	}
+    }
     printf("ADC(0)...........: %4.2f volt\n", data);
 
-	if (getADC(board, 1, &data) < 0) {
-		pabort("getADC(1) failed");
+    if(getADC(board, 1, &data) < 0)
+    {
+        pabort("getADC(1) failed");
         return EXIT_FAILURE;
-	}
+    }
     printf("ADC(1)...........: %4.2f volt\n", data);
 
-	uint32_t pwm = 0;
-	if (getPWM(board, 0, &pwm) < 0) {
-		pabort("getPWM(0) failed");
+    uint32_t pwm = 0;
+    if(getPWM(board, 0, &pwm) < 0)
+    {
+        pabort("getPWM(0) failed");
         return EXIT_FAILURE;
-	}
+    }
     printf("PWM(0)...........: %d\n", pwm);
 
-	if (getPWM(board, 1, &pwm) < 0) {
-		pabort("getPWM(1) failed");
+    if(getPWM(board, 1, &pwm) < 0)
+    {
+        pabort("getPWM(1) failed");
         return EXIT_FAILURE;
-	}
+    }
     printf("PWM(1)...........: %d\n", pwm);
 
-	float dac = 0;
-	if (getDAC(board, 0, &dac) < 0) {
-		pabort("getDAC(0) failed");
+    float dac = 0;
+    if(getDAC(board, 0, &dac) < 0)
+    {
+        pabort("getDAC(0) failed");
         return EXIT_FAILURE;
-	}
+    }
     printf("DAC(0)...........: %2.2f\n", dac);
 
-	if (getDAC(board, 1, &dac) < 0) {
-		pabort("getDAC(1) failed");
+    if(getDAC(board, 1, &dac) < 0)
+    {
+        pabort("getDAC(1) failed");
         return EXIT_FAILURE;
-	}
+    }
     printf("DAC(1)...........: %2.2f\n", dac);
 
-	uint8_t dout = RELAY2_STATE_ON | RELAY5_STATE_ON;
-	if(setDigitalOut(board, dout) < 0) {
-		pabort("setDigitalOut() failed");
+    uint8_t dout = RELAY2_STATE_ON | RELAY5_STATE_ON;
+    if(setDigitalOut(board, dout) < 0)
+    {
+        pabort("setDigitalOut() failed");
         return EXIT_FAILURE;
-	}
-
-	uint8_t doutstates = 0;
-	if (getDOUTbyte(board, &doutstates) < 0) {
-		pabort("getDOUTbyte() failed");
-        return EXIT_FAILURE;
-	}
-    printf("DOUT states......: 0x%x\n", doutstates);
-
-	if (enableDINint(board, 2, 'r') < 0) {
-		pabort("enableDINint() failed");
-        return EXIT_FAILURE;
-	}
-
-	if (enableDINint(board, 4, 'r') < 0) {
-		pabort("enableDINint() failed");
-        return EXIT_FAILURE;
-	}
-
-	uint8_t dinstates = 0;
-	if (getDINall(board, &dinstates) < 0) {
-		pabort("getDINall() failed");
-        return EXIT_FAILURE;
-	}
-    printf("DIN states.......: 0x%x\n", dinstates);
-
-	uint8_t swstates = 0;
-	if (getSWstate(board, &swstates) < 0) {
-		pabort("getSWstate() failed");
-        return EXIT_FAILURE;
-	}
-    printf("SW states........: 0x%x\n", swstates);
-
-	int i;
-	float adcAll[8];
-
-	if (getADCall(board, 0, adcAll, sizeof(adcAll)) < 0) {
-		pabort("getADCall(0) failed");
-        return EXIT_FAILURE;
-	}
-    for(i = 0; i < 8; i++) {
-		printf("ADC(0)[%d]........: %2.2f\n", i, adcAll[i]);
     }
 
-	if (getADCall(board, 1, adcAll, sizeof(adcAll)) < 0) {
-		pabort("getADCall(1) failed");
+    uint8_t doutstates = 0;
+    if(getDOUTbyte(board, &doutstates) < 0)
+    {
+        pabort("getDOUTbyte() failed");
         return EXIT_FAILURE;
-	}
-    for(i = 0; i < 8; i++) {
-		printf("ADC(1)[%d]........: %2.2f\n", i, adcAll[i]);
+    }
+    printf("DOUT states......: 0x%x\n", doutstates);
+
+    if(enableDINint(board, 2, 'r') < 0)
+    {
+        pabort("enableDINint() failed");
+        return EXIT_FAILURE;
+    }
+
+    if(enableDINint(board, 4, 'r') < 0)
+    {
+        pabort("enableDINint() failed");
+        return EXIT_FAILURE;
+    }
+
+    uint8_t dinstates = 0;
+    if(getDINall(board, &dinstates) < 0)
+    {
+        pabort("getDINall() failed");
+        return EXIT_FAILURE;
+    }
+    printf("DIN states.......: 0x%x\n", dinstates);
+
+    uint8_t swstates = 0;
+    if(getSWstate(board, &swstates) < 0)
+    {
+        pabort("getSWstate() failed");
+        return EXIT_FAILURE;
+    }
+    printf("SW states........: 0x%x\n", swstates);
+
+    int i;
+    float adcAll[8];
+
+    if(getADCall(board, 0, adcAll, sizeof(adcAll)) < 0)
+    {
+        pabort("getADCall(0) failed");
+        return EXIT_FAILURE;
+    }
+    for(i = 0; i < 8; i++)
+    {
+        printf("ADC(0)[%d]........: %2.2f\n", i, adcAll[i]);
+    }
+
+    if(getADCall(board, 1, adcAll, sizeof(adcAll)) < 0)
+    {
+        pabort("getADCall(1) failed");
+        return EXIT_FAILURE;
+    }
+    for(i = 0; i < 8; i++)
+    {
+        printf("ADC(1)[%d]........: %2.2f\n", i, adcAll[i]);
     }
 
     //--

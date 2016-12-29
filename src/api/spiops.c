@@ -356,11 +356,12 @@ int spiCommand(const board_command_t* pCommand)
     int ret = -1;
 
     // 4 parameters
-    uint8_t txbuff[4] = {
-   	    pCommand->address,
-   	    pCommand->command,
-   	    pCommand->param1,
-   	    pCommand->param2,
+    uint8_t txbuff[4] =
+    {
+        pCommand->address,
+        pCommand->command,
+        pCommand->param1,
+        pCommand->param2,
     };
     size_t size = sizeof(txbuff);
 

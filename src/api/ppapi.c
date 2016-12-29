@@ -421,8 +421,8 @@ int getHWRevision(const board_t* board, char* revision, const size_t size)
     verifyPointer(board);
     verifyPointer(revision);
 
-	// reset return
-	memset(revision, 0, size);
+    // reset return
+    memset(revision, 0, size);
 
     if(verifyAddr(board) == 0)
     {
@@ -482,8 +482,8 @@ int getFWRevision(const board_t* board, char* revision, const size_t size)
     verifyPointer(board);
     verifyPointer(revision);
 
-	// reset return
-	memset(revision, 0, size);
+    // reset return
+    memset(revision, 0, size);
 
     if(verifyAddr(board) == 0)
     {
@@ -542,8 +542,8 @@ int getID(const board_t* board, char* id, const size_t size)
     verifyPointer(board);
     verifyPointer(id);
 
-	// reset return
-	memset(id, 0, size);
+    // reset return
+    memset(id, 0, size);
 
     if(verifyAddr(board) == 0)
     {
@@ -871,8 +871,8 @@ int getLEDState(const board_t* board, const uint8_t led, uint8_t* state)
     verifyPointer(board);
     verifyPointer(state);
 
-	// reset return
-	*state = 0;
+    // reset return
+    *state = 0;
 
     if(verifyAddr(board) == 0)
     {
@@ -1021,8 +1021,8 @@ int getRelayState(const board_t* board, uint8_t* state)
 {
     verifyPointer(board);
 
-	// reset return
-	*state = 0;
+    // reset return
+    *state = 0;
 
     if(boardAllowed(board, PP_BOARD_TYPE_RELAY) == 0)
     {
@@ -1039,7 +1039,7 @@ int getRelayState(const board_t* board, uint8_t* state)
         return -1;
     }
 
-	uint8_t result = 0;
+    uint8_t result = 0;
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1065,8 +1065,8 @@ int getRelayState(const board_t* board, uint8_t* state)
         return rc;
     }
 
-	// return relay states
-	*state = result;
+    // return relay states
+    *state = result;
 
     return 0;
 }
@@ -1115,8 +1115,8 @@ int getProgMemory(const board_t* board, const uint32_t address, char* data, cons
     verifyPointer(board);
     verifyPointer(data);
 
-	// reset return
-	memset(data, 0, size);
+    // reset return
+    memset(data, 0, size);
 
     if(boardAllowed(board, PP_BOARD_TYPE_DAQC) == 0)
     {
@@ -1183,8 +1183,8 @@ int getADC(const board_t* board, const uint8_t channel, float* data)
     verifyPointer(board);
     verifyPointer(data);
 
-	// reset return
-	*data = 0;
+    // reset return
+    *data = 0;
 
     if(boardAllowed(board, PP_BOARD_TYPE_DAQC) == 0)
     {
@@ -1240,7 +1240,7 @@ int getADC(const board_t* board, const uint8_t channel, float* data)
         value = value * 2.0f;
     }
 
-	// return ADC value
+    // return ADC value
     *data = value;
 
     return 0;
@@ -1254,8 +1254,8 @@ int getADCall(const board_t* board, const uint8_t channel, float* data, const si
     verifyPointer(board);
     verifyPointer(data);
 
-	// reset return
-	memset(data, 0, size);
+    // reset return
+    memset(data, 0, size);
 
     if(boardAllowed(board, PP_BOARD_TYPE_DAQC) == 0)
     {
@@ -1309,7 +1309,7 @@ int getADCall(const board_t* board, const uint8_t channel, float* data, const si
 
     uint8_t index;
 
-	// fill ADC value table
+    // fill ADC value table
     for(index = 0; index < 8; index++)
     {
         data[index] = (256 * result[2 * index] + result[2 * index + 1]);
@@ -1349,7 +1349,7 @@ int getDINbit(const board_t* board, const uint8_t bit, uint8_t* state)
         return -1;
     }
 
-	uint8_t result = 0;
+    uint8_t result = 0;
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1375,8 +1375,8 @@ int getDINbit(const board_t* board, const uint8_t bit, uint8_t* state)
         return rc;
     }
 
-	// return state value
-	*state = result;
+    // return state value
+    *state = result;
 
     return 0;
 }
@@ -1388,8 +1388,8 @@ int getDINall(const board_t* board, uint8_t* states)
 {
     verifyPointer(board);
 
-	// reset return
-	*states = 0;
+    // reset return
+    *states = 0;
 
     if(boardAllowed(board, PP_BOARD_TYPE_DAQC) == 0)
     {
@@ -1406,7 +1406,7 @@ int getDINall(const board_t* board, uint8_t* states)
         return -1;
     }
 
-	uint8_t result[] = {0,0};
+    uint8_t result[] = {0,0};
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1432,8 +1432,8 @@ int getDINall(const board_t* board, uint8_t* states)
         return rc;
     }
 
-	// return states value
-	*states = result[0];
+    // return states value
+    *states = result[0];
 
     return 0;
 }
@@ -1573,8 +1573,8 @@ int getRange(const board_t* board, const uint8_t channel, const unsigned char un
     verifyPointer(board);
     verifyPointer(data);
 
-	// reset return
-	*data = 0.0f;
+    // reset return
+    *data = 0.0f;
 
     if(boardAllowed(board, PP_BOARD_TYPE_DAQC) == 0)
     {
@@ -1655,7 +1655,7 @@ int getRange(const board_t* board, const uint8_t channel, const unsigned char un
 
     *data = round(range);
 
-	usleep(PP_DELAY*10);
+    usleep(PP_DELAY*10);
 
     return 0;
 }
@@ -1687,7 +1687,7 @@ int getSWstate(const board_t* board, uint8_t* state)
         return -1;
     }
 
-	uint8_t result = 0;
+    uint8_t result = 0;
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1713,8 +1713,8 @@ int getSWstate(const board_t* board, uint8_t* state)
         return rc;
     }
 
-	// return state value
-	*state = result;
+    // return state value
+    *state = result;
 
     return 0;
 }
@@ -2021,7 +2021,7 @@ int updateDOUT(const board_t* board, const uint8_t bit, const uint8_t state)
  */
 int digitalOutON(const board_t* board, const uint8_t bit)
 {
-	return updateDOUT(board, bit, STATE_ON);
+    return updateDOUT(board, bit, STATE_ON);
 }
 
 /**
@@ -2029,7 +2029,7 @@ int digitalOutON(const board_t* board, const uint8_t bit)
  */
 int digitalOutOFF(const board_t* board, const uint8_t bit)
 {
-	return updateDOUT(board, bit, STATE_OFF);
+    return updateDOUT(board, bit, STATE_OFF);
 }
 
 /**
@@ -2037,7 +2037,7 @@ int digitalOutOFF(const board_t* board, const uint8_t bit)
  */
 int digitalOutToggle(const board_t* board, const uint8_t bit)
 {
-	return updateDOUT(board, bit, STATE_TOGGLE);
+    return updateDOUT(board, bit, STATE_TOGGLE);
 }
 
 /**
@@ -2045,7 +2045,7 @@ int digitalOutToggle(const board_t* board, const uint8_t bit)
  */
 int setDigitalOut(const board_t* board, const uint8_t bitMask)
 {
-	return updateDOUT(board, bitMask, STATE_ALL);
+    return updateDOUT(board, bitMask, STATE_ALL);
 }
 
 /**
@@ -2056,8 +2056,8 @@ int getDOUTbyte(const board_t* board, uint8_t* value)
     verifyPointer(board);
     verifyPointer(value);
 
-	// reset return
-	*value = 0;
+    // reset return
+    *value = 0;
 
     if(boardAllowed(board, PP_BOARD_TYPE_DAQC) == 0)
     {
@@ -2178,8 +2178,8 @@ int getPWM(const board_t* board, const uint8_t channel, uint32_t* data)
     verifyPointer(board);
     verifyPointer(data);
 
-	// reset return
-	*data = 0;
+    // reset return
+    *data = 0;
 
     if(boardAllowed(board, PP_BOARD_TYPE_DAQC) == 0)
     {
@@ -2306,8 +2306,8 @@ int getDAC(const board_t* board, const uint8_t channel, float* data)
     verifyPointer(board);
     verifyPointer(data);
 
-	// reset return
-	*data = 0.0f;
+    // reset return
+    *data = 0.0f;
 
     if(boardAllowed(board, PP_BOARD_TYPE_DAQC) == 0)
     {
@@ -2489,8 +2489,8 @@ int getINTflags(const board_t* board, uint16_t* flags)
     verifyPointer(board);
     verifyPointer(flags);
 
-	// reset return
-	*flags = 0;
+    // reset return
+    *flags = 0;
 
     if(boardAllowed(board, PP_BOARD_TYPE_DAQC) == 0)
     {
