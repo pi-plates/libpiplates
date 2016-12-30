@@ -9,22 +9,12 @@ Help would be nice - ThX.
 
 Help would be nice - ThX.
 
-**PI-Plates GPIO pin and board base address**
-struct config
-{
-	**Digitial input pin - Signal to interrupt (BCM pin 22)**
-    uint8_t pinInterrupt;
-
-    **Digital output pin - Signal to control SPI bus transfer (BCM pin 25)**
-    uint8_t pinFrameControl;
-
-    **PI-Plates specific SPI board base address**
-    uint8_t boardBaseAddr;
-
-    /**SPI BUS channel number (0=/dev/spidev0.0 or 1=/dev/spidev0.1) (Default is 1)**
-    uint8_t spiChannel;
-};
-typedef struct config config_t;
+#### struct config####
+PI-Plates GPIO pin and board base address structure
+**uint8_t pinInterrupt** Digitial input pin - Signal to interrupt (BCM pin 22)
+**uint8_t pinFrameControl** Digital output pin - Signal to control SPI bus transfer (BCM pin 25)
+**uint8_t boardBaseAddr** PI-Plates specific SPI board base address
+**uint8_t spiChannel** SPI BUS channel number (0=/dev/spidev0.0 or 1=/dev/spidev0.1) *Default is 1*
 
 **PI-plates board handle structure**
 struct board
