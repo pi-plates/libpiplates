@@ -78,9 +78,15 @@ int initConfig(
 ####Initialize the PI-Plates boards by specified board type####
 Function to initialize the all PI-Plates boards by specified board type. Each available board becomes a board_t
 handle allocated in a global board list. You must call **initConfig()** first to get the configuration for the
-board GPIO/SPI communication parameters. Function parameters:
+board GPIO/SPI communication parameters. The board type can be following value:
+- 1 **PP_BOARD_TYPE_RELAY**
+- 2 **PP_BOARD_TYPE_DAQC**
+- 3 **PP_BOARD_TYPE_MOTOR**
+
+Function parameters:
 - **type** One of the predefied board types (RELAY=1, DAQC=2 or MOTOR=3)
 - **return** 0 if succsess otherwise signal an error
+
 ```
 int initBoards(uint8_t type, const config_t* pConfig);
 ```
