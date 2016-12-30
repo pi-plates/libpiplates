@@ -1,5 +1,16 @@
 # C library for the PI-Plates I/O boards
-## made for Raspberry PI (libpiplates)
+## Made for Raspberry PI (libpiplates)
+
+This library is written in C and is designed to access the PI-Plates I/O boards.
+You can visit [PI-Plates](http://pi-plates.com/) to obtain one or more boards.
+
+## License
+Please see file LICENSE.
+
+```
+Copyright (c) 2016-2017 by B.Eschrich (EoF)
+All rights reserved.
+```
 
 ## API overview
 
@@ -277,8 +288,4 @@ Help would be nice - ThX.
 
 	- wiringPi library for Raspberry PI
 
-### Copyright (c) 2016-2017 by B. Eschrich, (E)mpire (O)f (F)un Guild
-### All rights reserved.
-
-
-# Changes -
+## Changes -
