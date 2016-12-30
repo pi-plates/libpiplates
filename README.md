@@ -59,12 +59,12 @@ struct version
 To communicate with the PI-Plates boards you have to initialize the GPIO/SPI communication configuration.
 **Note** that the pin numbers follows wiringPi GPIO layout and will be translated to the Broadcom pin layout.
 The C API library initializes the wiringPi with BCM pin layout. Function parameters:
- - **spiChannel** Use constant PP_SPI_IO_CHANNEL for default
- - **wpiPinINT** Interrupt signal pin (wiringPi=3 BCM=22)
- - **wpiPinFrame** SPI frame signal pin (wiringPi=6 BCM=25)
- - **boardBaseAddr** The PI-Plates board address
- - **pConfig** Pointer to the configuration structure
- - **return** 0 if succsess otherwise signal an error
+- **spiChannel** Use constant PP_SPI_IO_CHANNEL for default
+- **wpiPinINT** Interrupt signal pin (wiringPi=3 BCM=22)
+- **wpiPinFrame** SPI frame signal pin (wiringPi=6 BCM=25)
+- **boardBaseAddr** The PI-Plates board address
+- **pConfig** Pointer to the configuration structure
+- **return** 0 if succsess otherwise signal an error
 
 ```
 int initConfig(
@@ -73,6 +73,16 @@ int initConfig(
 			const uint8_t wpiPinFrame,
 			const uint8_t boardBaseAddr,
 			config_t* pConfig);
+```
+
+####Initialize the PI-Plate boards by specified board type####
+Function to initialize the all PI-Plates boards by specified board type. Each available board becomes a board_t
+handle allocated in a global board list. You must call **initConfig()** first to get the configuration for the
+board GPIO/SPI communication parameters. Function parameters:
+- **type** One of the predefied board types (RELAY=1, DAQC=2 or MOTOR=3)
+- **return** 0 if succsess otherwise signal an error
+```
+int initBoards(uint8_t type, const config_t* pConfig);
 ```
 
 ## Requirements and Dependencies
