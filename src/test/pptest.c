@@ -192,7 +192,7 @@ int testDAQCBoard()
         return EXIT_FAILURE;
     }
 
-    // Initialize all available RELAYplate boards
+    // Initialize all available DAQCplate boards
     if(initBoards(PP_BOARD_TYPE_DAQC, &config) < 0)
     {
         pabort("initBoards() failed.");

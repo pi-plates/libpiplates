@@ -75,6 +75,18 @@ int initConfig(
 			config_t* pConfig);
 ```
 
+#####Sample#####
+```
+config_t config;
+
+// Initialize GPIO / SPI addresses for the DAQCplate
+if(initConfig(PP_SPI_IO_CHANNEL, 3, 6, 8, &config) < 0)
+{
+	perror("initConfig() failed.");
+	return EXIT_FAILURE;
+}
+```
+
 ####Initialize the PI-Plates boards by specified board type####
 Function to initialize the all PI-Plates boards by specified board type. Each available board becomes a board_t
 handle allocated in a global board list. You must call **initConfig()** first to get the configuration for the
@@ -89,6 +101,16 @@ Function parameters:
 
 ```
 int initBoards(uint8_t type, const config_t* pConfig);
+```
+
+#####Sample#####
+```
+// Initialize all available DAQCplate boards
+if(initBoards(PP_BOARD_TYPE_DAQC, &config) < 0)
+{
+	perror("initBoards() failed.");
+	return EXIT_FAILURE;
+}
 ```
 
 ####Retrieve available boards for specific board type####
@@ -107,6 +129,16 @@ Function parameters:
 uint8_t getBoardList(const uint8_t type, board_t** ppResult);
 ```
 
+#####Sample#####
+```
+board_t* list;
+uint8_t count = getBoardList(PP_BOARD_TYPE_DAQC, &list);
+if (count)
+	printf("%d boards found...\n", count);
+if (list != null)
+	free(list);
+```
+
 ####Retrieve count of available PI-Plates boards####
 Call this function to get the number of available boards specified by board type. Function parameters:
 - **type** One of the predefined board types
@@ -114,6 +146,12 @@ Call this function to get the number of available boards specified by board type
 
 ```
 uint8_t getBoardCount(const uint8_t type);
+```
+
+#####Sample#####
+```
+uint8_t count = getBoardCount(PP_BOARD_TYPE_DAQC);
+printf("%d boards found...\n", count);
 ```
 
 ## Requirements and Dependencies
