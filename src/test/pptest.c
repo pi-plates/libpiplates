@@ -199,11 +199,11 @@ int testDAQCBoard()
         return EXIT_FAILURE;
     }
 
-    // get our configured RELAYplate board (see jumper @ address header)
+    // get our configured DAQCplate board (see jumper @ address header)
     board_t* board = getBoardByAddress(DAQC_BOARD_ADDR);
     if(board == NULL)
     {
-        pabort("initBoards() failed. No board for given address available!");
+        pabort("getBoardByAddress() failed. No board for given address available!");
         return EXIT_FAILURE;
     }
 

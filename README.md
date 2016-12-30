@@ -135,7 +135,7 @@ board_t* list;
 uint8_t count = getBoardList(PP_BOARD_TYPE_DAQC, &list);
 if (count)
 	printf("%d boards found...\n", count);
-if (list != null)
+if (list != NULL)
 	free(list);
 ```
 
@@ -153,6 +153,33 @@ uint8_t getBoardCount(const uint8_t type);
 uint8_t count = getBoardCount(PP_BOARD_TYPE_DAQC);
 printf("%d boards found...\n", count);
 ```
+
+####Retrieve a PI-Plates board handle by specified address####
+Use this function to get a specific board handle. The address value must be between 0 to 7. This
+means the address you have configured at the addreass header on the board. If the address
+could not be found, the return value is NULL otherwise do NOT free this resource.
+
+Function parameters:
+- **address** The board address 0 to 7 (preselected by jumper on address header)
+- **return** A pointer of the board_t handle structure.
+
+```
+board_t* getBoardByAddress(const uint8_t address);
+```
+
+#####Sample#####
+```
+// get our configured DAQCplate board (see jumper @ address header)
+board_t* board = getBoardByAddress(1);
+if(board == NULL)
+{
+	perror("getBoardByAddress() failed. No board for given address available!");
+	return EXIT_FAILURE;
+}
+
+```
+
+
 
 ## Requirements and Dependencies
 
