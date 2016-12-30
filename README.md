@@ -82,7 +82,7 @@ config_t config;
 // Initialize GPIO / SPI addresses for the DAQCplate
 if(initConfig(PP_SPI_IO_CHANNEL, 3, 6, 8, &config) < 0)
 {
-	perror("initConfig() failed.");
+	perror("initConfig() failed");
 	return EXIT_FAILURE;
 }
 ```
@@ -108,7 +108,7 @@ int initBoards(uint8_t type, const config_t* pConfig);
 // Initialize all available DAQCplate boards
 if(initBoards(PP_BOARD_TYPE_DAQC, &config) < 0)
 {
-	perror("initBoards() failed.");
+	perror("initBoards() failed");
 	return EXIT_FAILURE;
 }
 ```
@@ -173,12 +173,100 @@ board_t* getBoardByAddress(const uint8_t address);
 board_t* board = getBoardByAddress(1);
 if(board == NULL)
 {
-	perror("getBoardByAddress() failed. No board for given address available!");
+	perror("getBoardByAddress() failed");
 	return EXIT_FAILURE;
 }
 
 ```
 
+####Enable frame signal####
+This function raises the digital out pin to enble command transmission through the SPI bus.
+
+Function parameters:
+- **pBoard** Handle of the PI-Plates board
+- **return** 0 success otherwise signal an error
+
+```
+int enableFrame(const board_t* pBoard);
+```
+
+#####Sample#####
+```
+if(enableFrame(pBoard) != 0)
+{
+	perror("enableFrame() failed");
+	return EXIT_FAILURE;
+}
+
+```
+
+####Disable frame signal####
+This function clear the digital out pin to prevent command transmission through the SPI bus.
+
+Function parameters:
+- **pBoard** Handle of the PI-Plates board
+- **return** 0 success otherwise signal an error
+
+```
+int disableFrame(const board_t* pBoard);
+```
+
+#####Sample#####
+```
+if(disableFrame(pBoard) != 0)
+{
+	perror("disableFrame() failed");
+	return EXIT_FAILURE;
+}
+
+```
+
+####Retrieve the SPI board address####
+Use this function to test a the board address 0 to 7 or event get the SPI board address. To test a
+board address substract returned address value from pBoard->config.boardBaseAddress. The result
+must be the same value like in the address field of the board_t structure. This indicate that
+the given board address is valid.
+
+Function parameters:
+- **pBoard** Handle of the PI-Plates board
+- **pAddress** Pointer to retrieve the SPI board address
+- **return** 0 success otherwise signal an error
+
+```
+uint8_t getAddress(const board_t* pBoard, uint8_t* pData);
+```
+
+#####Sample#####
+```
+board_t board;
+
+// Initialize GPIO / SPI addresses for the DAQCplate
+if(initConfig(PP_SPI_IO_CHANNEL, 3, 6, 8, &board.config) < 0)
+{
+	perror("initConfig() failed");
+	return EXIT_FAILURE;
+}
+
+// set board type and address configured with the jumper
+// on the address header
+board.type = PP_BOARD_TYPE_DAQC;
+board.address = 1;
+
+// retrieve SPI board address
+uint8_t addr;
+if(getAddress(&board, &addr))
+{
+	perror("getAddress() failed");
+	return EXIT_FAILURE;
+}
+
+if((addr - board.config.boardBaseAddr) != board.address)
+{
+	printf("Board address %d is invalid!\n", board.address);
+	return EXIT_FAILURE;
+}
+
+```
 
 
 ## Requirements and Dependencies
