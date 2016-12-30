@@ -75,7 +75,7 @@ int initConfig(
 			config_t* pConfig);
 ```
 
-####Initialize the PI-Plate boards by specified board type####
+####Initialize the PI-Plates boards by specified board type####
 Function to initialize the all PI-Plates boards by specified board type. Each available board becomes a board_t
 handle allocated in a global board list. You must call **initConfig()** first to get the configuration for the
 board GPIO/SPI communication parameters. Function parameters:
@@ -83,6 +83,31 @@ board GPIO/SPI communication parameters. Function parameters:
 - **return** 0 if succsess otherwise signal an error
 ```
 int initBoards(uint8_t type, const config_t* pConfig);
+```
+
+####Retrieve available boards for specific board type####
+This function return a list to available PI-Plates boards for a specified board type. The type can
+be following value:
+- 1 **PP_BOARD_TYPE_RELAY**
+- 2 **PP_BOARD_TYPE_DAQC**
+- 3 **PP_BOARD_TYPE_MOTOR**
+**Note** The function caller MUST free allocated resources returned by this function.
+Function Parameters:
+- **type** One of the predefied board types (RELAY=1, DAQC=2 or MOTOR=3)
+- **ppResult** Pointer to the list. Caller MUST free allocated resources.
+- **return** Number of boards in the list
+
+```
+uint8_t getBoardList(const uint8_t type, board_t** ppResult);
+```
+
+####Retrieve count of available PI-Plates boards####
+Call this function to get the number of available boards specified by board type.
+Function Parameters:
+- **type** One of the predefined board types
+- **return** Number of available boards
+```
+uint8_t getBoardCount(const uint8_t type);
 ```
 
 ## Requirements and Dependencies

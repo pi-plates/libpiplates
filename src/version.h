@@ -13,18 +13,18 @@
 	
 	//Standard Version Type
 	#define PP_MAJOR  0
-	#define PP_MINOR  6
-	#define PP_BUILD  22
-	#define PP_REVISION  0
+	#define PP_MINOR  7
+	#define PP_BUILD  23
+	#define PP_REVISION  60
 	
 	//Miscellaneous Version Types
-	#define PP_BUILDS_COUNT  32
-	#define PP_RC_FILEVERSION 0,6,22,0
-	#define PP_RC_FILEVERSION_STRING "0, 6, 22, 0\0"
-	#define PP_FULLVERSION_STRING  "0.6.22.0"
+	#define PP_BUILDS_COUNT  33
+	#define PP_RC_FILEVERSION 0,7,23,60
+	#define PP_RC_FILEVERSION_STRING "0, 7, 23, 60\0"
+	#define PP_FULLVERSION_STRING  "0.7.23.60"
 	
 	//These values are to keep track of your versioning state, don't modify them.
-	#define PP_BUILD_HISTORY  4
+	#define PP_BUILD_HISTORY  0
 	
 
 #endif //VERSION_H

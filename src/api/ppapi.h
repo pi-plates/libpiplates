@@ -121,7 +121,7 @@ uint8_t getBoardList(const uint8_t type, board_t** ppResult);
 
 /**
  * Retrieve count of available PI-Plates boards specified by board type
- * @param One of the predefined board types
+ * @param type One of the predefined board types
  * @return Number of available boards
  */
 uint8_t getBoardCount(const uint8_t type);
