@@ -180,7 +180,7 @@ if(board == NULL)
 ```
 
 ####Enable frame signal####
-This function raises the digital out pin to enble command transmission through the SPI bus.
+This function raises the digital out pin to enable command transmission through the SPI bus.
 
 Function parameters:
 - **pBoard** Handle of the PI-Plates board
@@ -223,9 +223,9 @@ if(disableFrame(pBoard) != 0)
 
 ####Retrieve the SPI board address####
 Use this function to test a the board address 0 to 7 or event get the SPI board address. To test a
-board address substract returned address value from pBoard->config.boardBaseAddress. The result
-must be the same value like in the address field of the board_t structure. This indicate that
-the given board address is valid.
+board address substract returned address value from board base address. The result must be the same
+value like in the address field of the board_t structure. This indicate that the given board address
+is valid.
 
 Function parameters:
 - **pBoard** Handle of the PI-Plates board
