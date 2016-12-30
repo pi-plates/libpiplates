@@ -29,6 +29,14 @@
 // PI Plates specific
 #include "ppapi.h"
 
+// API Version
+static version_t g_version = {
+	.major		= PP_MAJOR,
+	.minor 		= PP_MINOR,
+	.build		= PP_BUILD,
+	.revision	= PP_REVISION,
+};
+
 // Available PI-Plates boards
 static board_t g_board_list[PP_MAX_BOARD_LIST_SIZE];
 static uint8_t g_board_count = 0;
@@ -187,15 +195,76 @@ static int verifyLED(const uint8_t led)
  * Generic PI-Plates functions
  * ======================================================================== */
 
+
 /**
- *
+ * Print board informations for given PI-Plates board.
+ * @param pBoard The board handle
  */
-uint8_t getBoardList(const uint8_t type, board_t** result)
+void printBoardInfo(const board_t* pBoard)
 {
-    verifyPointer(result);
+	verifyPointer(pBoard);
+
+    char id[64] = "";
+    char revision[10];
+
+	printf("GPIO config ------------------\n");
+    printf("Interrupt pin.....: %d\n", pBoard->config.pinInterrupt);
+    printf("Frame control pin.: %d\n", pBoard->config.pinFrameControl);
+    printf("Board base address: %d\n", pBoard->config.boardBaseAddr);
+    printf("SPI channel.......: %d\n", pBoard->config.spiChannel);
+	printf("Board specific ---------------\n");
+    printf("Type..............: %d\n", pBoard->type);
+    printf("Address...........: %d\n", pBoard->address);
+    printf("Vcc...............: %2.2f Volt\n", pBoard->vcc);
+    if(getID(pBoard, id, sizeof(id)) == 0)
+		printf("Board ID..........: %s\n", id);
+    if(getHWRevision(pBoard, revision, sizeof(revision)) == 0)
+		printf("Hardware Revision.: %s\n", revision);
+    if(getFWRevision(pBoard, revision, sizeof(revision)) == 0)
+		printf("Firmware Revision.: %s\n", revision);
+}
+
+/**
+ * Print C API version string
+ */
+void printAPIVersion()
+{
+	printf(
+		":: PI-Plates C API %s-%s\n"
+		":: Copyright (c) 2016-2017 by B. Eschrich (EoF)\n\n",
+		PP_FULLVERSION_STRING, PP_STATUS_SHORT);
+}
+
+/**
+ * Retrieve C API version string
+ */
+void getAPIVersionString(char* pVersion, size_t size)
+{
+	if (size > sizeof(PP_FULLVERSION_STRING) + 4)
+	{
+		snprintf(pVersion, size, "%s-%s", PP_FULLVERSION_STRING, PP_STATUS_SHORT);
+	}
+}
+
+/**
+ * Retrieve C API version information
+ */
+version_t* getAPIVersion()
+{
+	return &g_version;
+}
+
+/**
+ * Retrive available boards for specific board type
+ * @param type One of the predefied board types (RELAY=1, DAQC=2 or MOTOR=3)
+ * @param ppResult Pointer to the list. Caller must free allocate resources.
+ */
+uint8_t getBoardList(const uint8_t type, board_t** ppResult)
+{
+    verifyPointer(ppResult);
 
     // invalidate result pointer
-    *result = NULL;
+    *ppResult = NULL;
 
     if(verifyBoardType(type) < 0)
     {
@@ -213,21 +282,26 @@ uint8_t getBoardList(const uint8_t type, board_t** result)
     for(index = 0; index < g_board_count; index++)
     {
         board = &g_board_list[index];
+
+		// is requested board type?
         if(board->type == type)
         {
-            // first time in loop
-            if(*result == NULL)
+            // firtype One of the predefied board types (RELAY=1, DAQC=2 or MOTOR=3)st time in loop
+            if(*ppResult == NULL)
             {
-                *result = (board_t*) malloc(sizeof(board_t));
-                rb = &(*result[boardsFound]);
+                *ppResult = (board_t*) malloc(sizeof(board_t) * PP_MAX_BOARD_COUNT);
             }
-            else
-            {
-                *result = (board_t*) realloc(result, sizeof(board_t));
-                rb = &(*result[boardsFound + 1]);
-            }
+            rb = &(*ppResult[boardsFound]);
             memcpy(rb, board, sizeof(board_t));
+
+            // next board
             boardsFound++;
+
+            // finish if max reached
+            if (boardsFound >= PP_MAX_BOARD_COUNT)
+			{
+				break;
+			}
         }
     }
 
@@ -235,7 +309,10 @@ uint8_t getBoardList(const uint8_t type, board_t** result)
 }
 
 /**
- *
+ * Retrieve a PI-Plates board handle by specified address. If the address
+ * could not be found, return value is NULL
+ * @param address The board address 0 to 7 (preselected by jumper on address header)
+ * @return A pointer of the allocated board_t structure.
  */
 board_t* getBoardByAddress(const uint8_t address)
 {
@@ -253,7 +330,9 @@ board_t* getBoardByAddress(const uint8_t address)
 }
 
 /**
- *
+ * Retrieve count of available PI-Plates boards specified by board type
+ * @param type One of the predefied board types (RELAY=1, DAQC=2 or MOTOR=3)
+ * @return Number of available boards
  */
 uint8_t getBoardCount(const uint8_t type)
 {
@@ -275,21 +354,194 @@ uint8_t getBoardCount(const uint8_t type)
     return boardsFound;
 }
 
+
 /**
- *
+ * Initialize GPIO/SPI configuration structure to communicate
+ * with the PI-Plates boards. Note that the pin numbers follows
+ * wiringPi GPIO layout and will be translated to the Broadcom
+ * pin layout. The C API library initializes the wiringPi with
+ * BCM pin layout.
+ * @param spiChannel Use constant PP_SPI_IO_CHANNEL for default
+ * @param wpiPinINT Interrupt signal pin (wiringPi=3 BCM=22)
+ * @param wpiPinFrame SPI frame signal pin (wiringPi=6 BCM=25)
+ * @param boardBaseAddr The PI-Plates board address
+ * @param pConfig Pointer to the configuration structure
+ * @return 0 if succsess otherwise signal an error
  */
-int enableFrame(const board_t* board)
+int initConfig(const uint8_t spiChannel, const uint8_t wpiPinINT, const uint8_t wpiPinFrame, const uint8_t boardBaseAddr, config_t* pConfig)
 {
-    verifyPointer(board);
+    verifyPointer(pConfig);
+
+    if(g_first_call == 0)
+    {
+        g_first_call = 1;
+        wiringPiSetupGpio(); // BCM pin layout root mode
+    }
+
+    pConfig->spiChannel = spiChannel;
+    pConfig->pinInterrupt = wpiPinToGpio(wpiPinINT);
+    pConfig->pinFrameControl = wpiPinToGpio(wpiPinFrame);
+    pConfig->boardBaseAddr = boardBaseAddr;
+
+    return 0;
+}
+
+/**
+ * Initialize the PI-Plate boards by specified board type. Each available board becomes
+ * a board_t handle allocated in a global board list. You must call initConfig(...) first
+ * to get the configuration for the board GPIO/SPI communication.
+ * @param type One of the predefied board types (RELAY=1, DAQC=2 or MOTOR=3)
+ * @return 0 if succsess otherwise signal an error
+ */
+int initBoards(uint8_t type, const config_t* pConfig)
+{
+    if(g_first_call == 0)
+    {
+        fprintf(stderr, "FATAL: You must call 'initConfig()' first.\n");
+        return -1;
+    }
+
+    board_t* board;
+
+    verifyPointer(pConfig);
+
+    // clear available board list first time
+    if(g_board_count == 0)
+    {
+        memset(g_board_list, 0, PP_MAX_BOARD_LIST_SIZE);
+    }
+
+    // set a pointer to the start of the list
+    board = &g_board_list[g_board_count];
+
+    // copy basic operation values into configuration structure
+    memcpy(&board->config, pConfig, sizeof(config_t));
+
+    // set requested board type
+    board->type = type;
+
+    // Initialize frame signal
+    pinMode(pConfig->pinFrameControl, OUTPUT);
+
+    // lock SPI frame transfer
+    if(disableFrame(board) < 0)
+    {
+        return -1;
+    }
+
+    // Initialize interrupt control
+    pinMode(pConfig->pinInterrupt, INPUT);
+    pullUpDnControl(pConfig->pinInterrupt, PUD_UP);
+
+    // time to system
+    usleep(PP_DELAY);
+
+    uint8_t i;
+    uint8_t index = 0;
+
+    // find PI-Plates addresses for requested board type
+    for(i = 0; i < PP_MAX_BOARD_COUNT; i++)
+    {
+        board_t tstbrd;
+
+        // load board configuration
+        memcpy(&tstbrd.config, pConfig, sizeof(config_t));
+        tstbrd.type = type;
+        tstbrd.address = i;
+
+        // check board address
+        uint8_t addr;
+        if(getAddress(&tstbrd, &addr) < 0)
+        {
+            fprintf(stderr, "Unable to get board address.\n");
+            return -1;
+        }
+
+        int rc = (addr - pConfig->boardBaseAddr);
+        if(rc == i)
+        {
+            // save board configuration at end of list
+            memcpy(&g_board_list[g_board_count], &tstbrd, sizeof(board_t));
+            // set new allocated board
+            g_board_count++;
+            // increment found counter
+            index++;
+        }
+    }
+
+    // any boards found?
+    if(index == 0)
+    {
+        fprintf(stderr, "No boards of type %d found!\n", type);
+        return -1;
+    }
+
+    // force board reset to available boards
+    for(i = 0; i < g_board_count; i++)
+    {
+        if(g_board_list[i].type == type)
+        {
+            if(reset(&g_board_list[i]) < 0)
+            {
+                return -1;
+            }
+
+            // DAQC specific initialization
+            if(g_board_list[i].type == PP_BOARD_TYPE_DAQC)
+            {
+                // set default VCC value
+                g_board_list[i].vcc = (float) 10000;
+
+                // measure real VCC value
+                while(1)
+                {
+                    if(calcDAC(&g_board_list[i]) < 0)
+                    {
+                        return -1;
+                    }
+                    if(g_board_list[i].vcc > 3.0f)
+                    {
+                        break;
+                    }
+                }
+
+                // reset all digital outputs
+                updateDOUT(board, 0, STATE_ALL);
+
+                // initialize PWM
+                setPWM(board, 0, 0);
+                setPWM(board, 1, 0);
+            }
+
+            usleep(45000);
+        }
+    }
+
+    // wait reset process finished
+    sleep(1);
+
+    // success
+    return 0;
+}
+
+/**
+ * Enable frame signal to transmit commands to the
+ * board through the SPI bus.
+ * @param pBoard Handle of the PI-Plates board
+ * @return 0 success otherwise signal an error
+ */
+int enableFrame(const board_t* pBoard)
+{
+    verifyPointer(pBoard);
 
     // enable SPI frame transfer
-    digitalWrite(board->config.pinFrameControl, HIGH);
+    digitalWrite(pBoard->config.pinFrameControl, HIGH);
 
     // time to system
     usleep(PP_DELAY);
 
     // check bit has raised
-    if(!digitalRead(board->config.pinFrameControl))
+    if(!digitalRead(pBoard->config.pinFrameControl))
     {
         return -1;
     }
@@ -298,7 +550,10 @@ int enableFrame(const board_t* board)
 }
 
 /**
- *
+ * Disable frame signal to prevent transmission
+ * through the SPI bus.
+ * @param pBoard Handle of the PI-Plates board
+ * @return 0 success otherwise signal an error
  */
 int disableFrame(const board_t* board)
 {
@@ -321,19 +576,25 @@ int disableFrame(const board_t* board)
 
 
 /**
- *
+ * Retrieve the SPI board address. To test a valid board address
+ * substract *pAddress - pBoard->config.boardBaseAddress. The result
+ * must be zero. That indicate that the given board address in the
+ * address field of the board_t structure is valid.
+ * @param pBoard Handle of the PI-Plates board
+ * @param pAddress Pointer to retrieve the SPI board address
+ * @return 0 success otherwise signal an error
  */
-uint8_t getAddress(const board_t* board, uint8_t* address)
+uint8_t getAddress(const board_t* pBoard, uint8_t* pAddress)
 {
-    verifyPointer(board);
-    verifyPointer(address);
+    verifyPointer(pBoard);
+    verifyPointer(pAddress);
 
     int rc = -1;
 
     // reset return
-    *address = 0;
+    *pAddress = 0;
 
-    rc = enableFrame(board);
+    rc = enableFrame(pBoard);
     if(rc < 0)
     {
         return rc;
@@ -341,12 +602,12 @@ uint8_t getAddress(const board_t* board, uint8_t* address)
 
     board_command_t bc =
     {
-        .channel = board->config.spiChannel,
-        .address = board->config.boardBaseAddr + board->address,
+        .channel = pBoard->config.spiChannel,
+        .address = pBoard->config.boardBaseAddr + pBoard->address,
         .command = 0x00,
         .param1 = 0,
         .param2 = 0,
-        .result = address,
+        .result = pAddress,
         .size = sizeof(uint8_t),
         .stopAt0x0 = 0,
     };
@@ -354,11 +615,11 @@ uint8_t getAddress(const board_t* board, uint8_t* address)
     rc = spiCommand(&bc);
     if(rc < 0)
     {
-        disableFrame(board);
+        disableFrame(pBoard);
         return rc;
     }
 
-    rc = disableFrame(board);
+    rc = disableFrame(pBoard);
     if(rc < 0)
     {
         return rc;
@@ -592,192 +853,6 @@ int getID(const board_t* board, char* id, const size_t size)
     snprintf(id, size, "%s", result);
 
     return strlen(id);
-}
-
-int initConfig(const uint8_t spiChannel, const uint8_t wpiPinINT, const uint8_t wpiPinFrame, const uint8_t boardBaseAddr, config_t* pConfig)
-{
-    verifyPointer(pConfig);
-
-    if(g_first_call == 0)
-    {
-        g_first_call = 1;
-#ifdef PP_DEBUG
-        printf(
-            ":: PI-Plates C API %s.%s Build %d\n"
-            ":: Copyright (c) 2016-2017 by B. Eschrich (EoF)\n",
-            PP_UBUNTU_VERSION_STYLE, PP_STATUS_SHORT, PP_BUILDS_COUNT);
-#endif // PP_DEBUG
-        // BCM pin layout root mode
-#ifdef PP_DEBUG
-        puts("Initialize wiringPi to GPIO BCM pin layout...");
-#endif // PP_DEBUG
-        wiringPiSetupGpio();
-    }
-
-    pConfig->spiChannel = spiChannel;
-    pConfig->pinInterrupt = wpiPinToGpio(wpiPinINT);
-    pConfig->pinFrameControl = wpiPinToGpio(wpiPinFrame);
-    pConfig->boardBaseAddr = boardBaseAddr;
-
-    return 0;
-}
-
-/*
- *
- */
-int initBoards(uint8_t type, const config_t* pConfig)
-{
-    if(g_first_call == 0)
-    {
-        fprintf(stderr, "FATAL: You must call 'initConfig()' first.\n");
-        return -1;
-    }
-
-    board_t* board;
-
-    verifyPointer(pConfig);
-
-#ifdef PP_DEBUG
-    printf("Board type........: %d\n", type);
-    printf("Interrupt pin.....: %d\n", pConfig->pinInterrupt);
-    printf("Frame control pin.: %d\n", pConfig->pinFrameControl);
-    printf("Board base address: %d\n", pConfig->boardBaseAddr);
-    printf("SPI channel.......: %d\n", pConfig->spiChannel);
-#endif // PP_DEBUG
-
-    // clear available board list first time
-    if(g_board_count == 0)
-    {
-        memset(g_board_list, 0, PP_MAX_BOARD_LIST_SIZE);
-    }
-
-    // set a pointer to the start of the list
-    board = &g_board_list[g_board_count];
-
-    // copy basic operation values into configuration structure
-    memcpy(&board->config, pConfig, sizeof(config_t));
-
-    // set requested board type
-    board->type = type;
-
-    // Initialize frame signal
-#ifdef PP_DEBUG
-    puts("Initialize frame signal...");
-#endif // PP_DEBUG
-    pinMode(pConfig->pinFrameControl, OUTPUT);
-
-    // lock SPI frame transfer
-    if(disableFrame(board) < 0)
-    {
-        return -1;
-    }
-
-    // Initialize interrupt control
-#ifdef PP_DEBUG
-    puts("Initialize interrupt signal...");
-#endif // PP_DEBUG
-    pinMode(pConfig->pinInterrupt, INPUT);
-    pullUpDnControl(pConfig->pinInterrupt, PUD_UP);
-
-    // time to system
-    usleep(PP_DELAY);
-
-#ifdef PP_DEBUG
-	printf("Determine available boards of type #%d...\n", type);
-#endif // PP_DEBUG
-
-    uint8_t i;
-    uint8_t index = 0;
-
-    // find PI-Plates addresses for requested board type
-    for(i = 0; i < PP_MAX_BOARD_COUNT; i++)
-    {
-        board_t tstbrd;
-
-        // load board configuration
-        memcpy(&tstbrd.config, pConfig, sizeof(config_t));
-        tstbrd.type = type;
-        tstbrd.address = i;
-
-        // check board address
-        uint8_t addr;
-        if(getAddress(&tstbrd, &addr) < 0)
-        {
-            fprintf(stderr, "Unable to get board address.\n");
-            return -1;
-        }
-
-        int rc = (addr - pConfig->boardBaseAddr);
-        if(rc == i)
-        {
-#ifdef PP_DEBUG
-            printf("Found board type %d at address: %d\n", type, i);
-#endif // PP_DEBUG
-            // save board configuration at end of list
-            memcpy(&g_board_list[g_board_count], &tstbrd, sizeof(board_t));
-            // set new allocated board
-            g_board_count++;
-            // increment found counter
-            index++;
-        }
-    }
-
-    // any boards found?
-    if(index == 0)
-    {
-        fprintf(stderr, "No boards of type %d found!\n", type);
-        return -1;
-    }
-
-    // force board reset to available boards
-#ifdef PP_DEBUG
-    printf("Reset available boards of type %d ...\n", type);
-#endif // PP_DEBUG
-    for(i = 0; i < g_board_count; i++)
-    {
-        if(g_board_list[i].type == type)
-        {
-            if(reset(&g_board_list[i]) < 0)
-            {
-                return -1;
-            }
-
-            // DAQC specific initialization
-            if(g_board_list[i].type == PP_BOARD_TYPE_DAQC)
-            {
-                // set default VCC value
-                g_board_list[i].vcc = (float) 10000;
-
-                // measure real VCC value
-                while(1)
-                {
-                    if(getADC(board, 8, &g_board_list[i].vcc) < 0)
-                    {
-                        return -1;
-                    }
-                    if(g_board_list[i].vcc > 3.0f)
-                    {
-                        break;
-                    }
-                }
-
-                // reset all digital outputs
-                updateDOUT(board, 0, STATE_ALL);
-
-                // initialize PWM
-                setPWM(board, 0, 0);
-                setPWM(board, 1, 0);
-            }
-
-            usleep(45000);
-        }
-    }
-
-    // wait reset process finished
-    sleep(1);
-
-    // success
-    return 0;
 }
 
 /**

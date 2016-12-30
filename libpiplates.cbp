@@ -22,6 +22,7 @@
 			<Target title="pptest_debug">
 				<Option output="Debug/pptest" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Debug/" />
+				<Option additional_output="Debug/libpiplates.so;" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
@@ -29,7 +30,11 @@
 					<Add option="-g" />
 					<Add option="-DPP_DEBUG" />
 					<Add option="-DTRACE_SPI_OPS" />
+					<Add directory="src/api" />
 				</Compiler>
+				<Linker>
+					<Add library="Debug/libpiplates.so" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="Release/piplates" prefix_auto="1" extension_auto="1" />
@@ -53,9 +58,11 @@
 				<Option use_console_runner="0" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="src/api" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="Release/libpiplates.so" />
 				</Linker>
 			</Target>
 		</Build>
@@ -82,10 +89,6 @@
 			<Option target="pptest_release" />
 		</Unit>
 		<Unit filename="src/version.h" />
-		<Unit filename="version.h">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
 		<Extensions>
 			<AutoVersioning>
 				<Scheme minor_max="99" build_max="999" rev_max="99" rev_rand_max="99" build_times_to_increment_minor="1" />
@@ -97,6 +100,15 @@
 			<envvars />
 			<debugger />
 			<lib_finder disable_auto="1" />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project project_number="1" output_language="German" />
+				<doxyfile_build extract_all="1" />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
