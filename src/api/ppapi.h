@@ -1,6 +1,6 @@
 /*
  ============================================================================
- Name        : pprelay.h
+ Name        : ppapi.h
  Author      : B. Eschrich
  Version     : 1.00
  Copyright   : Copyright (c) 2016-2017 by B. Eschrich (EoF)
@@ -40,23 +40,24 @@
 #define STATE_TOGGLE 			0x02
 #define STATE_ALL				0x03
 
-/* Relay state bits */
-#define RELAY1_STATE_ON			0x01
-#define RELAY2_STATE_ON			0x02
-#define RELAY3_STATE_ON			0x04
-#define RELAY4_STATE_ON			0x08
-#define RELAY5_STATE_ON			0x10
-#define RELAY6_STATE_ON			0x20
-#define RELAY7_STATE_ON			0x40
+/* Bit ON states */
+#define BIT1_STATE_ON			0x01
+#define BIT2_STATE_ON			0x02
+#define BIT3_STATE_ON			0x04
+#define BIT4_STATE_ON			0x08
+#define BIT5_STATE_ON			0x10
+#define BIT6_STATE_ON			0x20
+#define BIT7_STATE_ON			0x40
+#define BIT8_STATE_ON			0x80
 
 /**
  * PI-Plates GPIO pin and board base address
  */
 struct config
 {
-	/**
-	 * Digitial input pin - Signal to interrupt (BCM pin 22)
-	 */
+    /**
+     * Digitial input pin - Signal to interrupt (BCM pin 22)
+     */
     uint8_t pinInterrupt;
     /**
      * Digital output pin - Signal to control SPI bus transfer (BCM pin 25)
@@ -80,9 +81,9 @@ typedef struct config config_t;
  */
 struct board
 {
-	/**
-	 * GPIO/SPI configuration
-	 */
+    /**
+     * GPIO/SPI configuration
+     */
     config_t config;
     /**
      * The PI-Plates board address in range 0 to 7
@@ -103,10 +104,10 @@ typedef struct board board_t;
 /* API Version */
 struct version
 {
-	const long major;
-	const long minor;
-	const long build;
-	const long revision;
+    const long major;
+    const long minor;
+    const long build;
+    const long revision;
 };
 
 typedef struct version version_t;

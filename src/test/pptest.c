@@ -136,7 +136,7 @@ static int testRelayBoard()
         printf("states: 0x%x\n", state);
     }
 
-    uint8_t relays = RELAY2_STATE_ON | RELAY4_STATE_ON | RELAY6_STATE_ON;
+    uint8_t relays = BIT2_STATE_ON | BIT4_STATE_ON | BIT6_STATE_ON;
     if(updateRelays(board, relays) < 0)
     {
         pabort("Switch relays by bit mask failed.");
@@ -146,12 +146,12 @@ static int testRelayBoard()
     usleep(589000);
 
     // switch off two relays
-    relays = relays & ~RELAY4_STATE_ON;
-    relays = relays & ~RELAY6_STATE_ON;
+    relays = relays & ~BIT4_STATE_ON;
+    relays = relays & ~BIT6_STATE_ON;
 
     // switch on another two relays
-    relays |= RELAY5_STATE_ON;
-    relays |= RELAY7_STATE_ON;
+    relays |= BIT5_STATE_ON;
+    relays |= BIT7_STATE_ON;
 
     if(updateRelays(board, relays) < 0)
     {
@@ -337,7 +337,7 @@ int testDAQCBoard()
     }
     printf("DAC(1)...........: %2.2f\n", dac);
 
-    uint8_t dout = RELAY2_STATE_ON | RELAY5_STATE_ON;
+    uint8_t dout = BIT2_STATE_ON | BIT5_STATE_ON;
     if(setDigitalOut(board, dout) < 0)
     {
         pabort("setDigitalOut() failed");

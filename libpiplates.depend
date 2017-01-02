@@ -19,3 +19,32 @@
 
 1483033067 /home/pi/Projects/libpiplates/src/api/spiops.h
 
+1483348964 source:/home/pi/Projects/libpiplates/src/api/ppapi.c
+	<ctype.h>
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string.h>
+	<unistd.h>
+	<math.h>
+	<errno.h>
+	<wiringPi.h>
+	"../version.h"
+	"spiops.h"
+	"ppapi.h"
+
+1483349241 /home/pi/Projects/libpiplates/src/version.h
+
+1483349220 /home/pi/Projects/libpiplates/src/api/ppapi.h
+
+1483083919 source:/home/pi/Projects/libpiplates/src/test/pptest.c
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string.h>
+	<unistd.h>
+	<errno.h>
+	<wiringPi.h>
+	"../api/spiops.h"
+	"../api/ppapi.h"
+
