@@ -16,7 +16,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DPP_DEBUG" />
-					<Add option="-DTRACE_SPI_OPS" />
+					<Add option="-D_T_RACE_SPI_OPS_" />
 				</Compiler>
 			</Target>
 			<Target title="pptest_debug">
@@ -29,7 +29,7 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DPP_DEBUG" />
-					<Add option="-DTRACE_SPI_OPS" />
+					<Add option="-D_T_RACE_SPI_OPS_" />
 					<Add directory="src/api" />
 				</Compiler>
 				<Linker>

@@ -70,7 +70,7 @@ OBJ_RELEASE = $(OBJDIR_RELEASE)/src/api/ppapi.o $(OBJDIR_RELEASE)/src/api/spiops
 
 OBJ_PPTEST_RELEASE = $(OBJDIR_PPTEST_RELEASE)/src/test/pptest.o
 
-all: debug pptest_debug release pptest_release
+all: debug release pptest_debug pptest_release
 
 clean: clean_debug clean_pptest_debug clean_release clean_pptest_release
 

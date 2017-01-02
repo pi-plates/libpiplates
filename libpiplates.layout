@@ -1,41 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<FileVersion major="1" minor="0" />
-	<ActiveTarget name="Debug" />
-	<File name="src\api\ppapi.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<ActiveTarget name="pptest_debug" />
+	<File name="src/api/ppapi.h" open="0" top="0" tabpos="2" split="2" active="1" splitpos="32" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="14367" topLine="585" />
+			<Cursor1 position="0" topLine="0" />
+			<Cursor2 position="1107" topLine="389" />
 		</Cursor>
 	</File>
-	<File name="src\api\ppapi.h" open="1" top="0" tabpos="2" split="2" active="1" splitpos="32" zoom_1="0" zoom_2="0">
+	<File name="src/api/ppapi.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="5814" topLine="187" />
-			<Cursor2 position="644" topLine="0" />
+			<Cursor1 position="169" topLine="452" />
 		</Cursor>
 	</File>
-	<File name="README.md" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="162" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src\test\pptest.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4953" topLine="19" />
-		</Cursor>
-	</File>
-	<File name="src\api\spiops.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="773" topLine="9" />
-		</Cursor>
-	</File>
-	<File name="src\version.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src/version.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="301" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src\api\spiops.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="README.md" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="613" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src/api/spiops.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="370" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src/test/pptest.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="8301" topLine="322" />
+		</Cursor>
+	</File>
+	<File name="src/api/spiops.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="773" topLine="9" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
