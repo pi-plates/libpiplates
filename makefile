@@ -23,11 +23,11 @@ CFLAGS_DEBUG = $(CFLAGS) -g -DPP_DEBUG -DTRACE_SPI_OPS
 RESINC_DEBUG = $(RESINC)
 RCFLAGS_DEBUG = $(RCFLAGS)
 LIBDIR_DEBUG = $(LIBDIR)
-LIB_DEBUG = $(LIB)
+LIB_DEBUG = $(LIB) -lwiringPi -lwiringPiDev
 LDFLAGS_DEBUG = $(LDFLAGS)
 OBJDIR_DEBUG = Debug
 DEP_DEBUG = 
-OUT_DEBUG = Debug/piplates.so
+OUT_DEBUG = Debug/libpiplates.so
 
 INC_PPTEST_DEBUG = $(INC) -Isrc/api
 CFLAGS_PPTEST_DEBUG = $(CFLAGS) -g -DPP_DEBUG -DTRACE_SPI_OPS
@@ -45,11 +45,11 @@ CFLAGS_RELEASE = $(CFLAGS) -O2
 RESINC_RELEASE = $(RESINC)
 RCFLAGS_RELEASE = $(RCFLAGS)
 LIBDIR_RELEASE = $(LIBDIR)
-LIB_RELEASE = $(LIB)
-LDFLAGS_RELEASE = $(LDFLAGS) -s
+LIB_RELEASE = $(LIB) -lwiringPi -lwiringPiDev
+LDFLAGS_RELEASE = $(LDFLAGS) 
 OBJDIR_RELEASE = Release
 DEP_RELEASE = 
-OUT_RELEASE = Release/piplates.so
+OUT_RELEASE = Release/libpiplates.so
 
 INC_PPTEST_RELEASE = $(INC) -Isrc/api
 CFLAGS_PPTEST_RELEASE = $(CFLAGS) -O2
@@ -57,7 +57,7 @@ RESINC_PPTEST_RELEASE = $(RESINC)
 RCFLAGS_PPTEST_RELEASE = $(RCFLAGS)
 LIBDIR_PPTEST_RELEASE = $(LIBDIR)
 LIB_PPTEST_RELEASE = $(LIB)Release/libpiplates.so
-LDFLAGS_PPTEST_RELEASE = $(LDFLAGS) -s
+LDFLAGS_PPTEST_RELEASE = $(LDFLAGS) 
 OBJDIR_PPTEST_RELEASE = Release
 DEP_PPTEST_RELEASE = 
 OUT_PPTEST_RELEASE = Release/pptest
@@ -97,6 +97,7 @@ clean_debug:
 	rm -rf $(OBJDIR_DEBUG)/src/api
 
 before_pptest_debug: 
+	echo "** Build PPTEST debug"
 	test -d Debug || mkdir -p Debug
 	test -d $(OBJDIR_PPTEST_DEBUG)/src/test || mkdir -p $(OBJDIR_PPTEST_DEBUG)/src/test
 
@@ -138,6 +139,7 @@ clean_release:
 	rm -rf $(OBJDIR_RELEASE)/src/api
 
 before_pptest_release: 
+	echo "** Build PPTEST release"
 	test -d Release || mkdir -p Release
 	test -d $(OBJDIR_PPTEST_RELEASE)/src/test || mkdir -p $(OBJDIR_PPTEST_RELEASE)/src/test
 
