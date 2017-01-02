@@ -204,7 +204,7 @@ int disableFrame(const board_t* pBoard);
  * @param pAddress Pointer to retrieve the SPI board address
  * @return 0 success otherwise signal an error
  */
-uint8_t getAddress(const board_t* pBoard, uint8_t* pData);
+int getAddress(const board_t* pBoard, uint8_t* pData);
 
 /**
  *

@@ -30,11 +30,12 @@
 #include "ppapi.h"
 
 // API Version
-static version_t g_version = {
-	.major		= PP_MAJOR,
-	.minor 		= PP_MINOR,
-	.build		= PP_BUILD,
-	.revision	= PP_REVISION,
+static version_t g_version =
+{
+    .major		= PP_MAJOR,
+    .minor 		= PP_MINOR,
+    .build		= PP_BUILD,
+    .revision	= PP_REVISION,
 };
 
 // Available PI-Plates boards
@@ -191,6 +192,26 @@ static int verifyLED(const uint8_t led)
     return 0;
 }
 
+/**
+ *
+ */
+static int sendCommand(const board_t* pBoard, const board_command_t* pCommand)
+{
+    if(enableFrame(pBoard) != 0)
+    {
+        return -1;
+    }
+
+    int rc = spiCommand(pCommand);
+
+    if (disableFrame(pBoard) != 0)
+	{
+		return -1;
+	}
+
+    return rc;
+}
+
 /* ========================================================================
  * Generic PI-Plates functions
  * ======================================================================== */
@@ -202,26 +223,32 @@ static int verifyLED(const uint8_t led)
  */
 void printBoardInfo(const board_t* pBoard)
 {
-	verifyPointer(pBoard);
+    verifyPointer(pBoard);
 
     char id[64] = "";
     char revision[10];
 
-	printf("GPIO config ------------------\n");
+    printf("GPIO config ------------------\n");
     printf("Interrupt pin.....: %d\n", pBoard->config.pinInterrupt);
     printf("Frame control pin.: %d\n", pBoard->config.pinFrameControl);
     printf("Board base address: %d\n", pBoard->config.boardBaseAddr);
     printf("SPI channel.......: %d\n", pBoard->config.spiChannel);
-	printf("Board specific ---------------\n");
+    printf("Board specific ---------------\n");
     printf("Type..............: %d\n", pBoard->type);
     printf("Address...........: %d\n", pBoard->address);
     printf("Vcc...............: %2.2f Volt\n", pBoard->vcc);
     if(getID(pBoard, id, sizeof(id)) == 0)
-		printf("Board ID..........: %s\n", id);
+    {
+        printf("Board ID..........: %s\n", id);
+    }
     if(getHWRevision(pBoard, revision, sizeof(revision)) == 0)
-		printf("Hardware Revision.: %s\n", revision);
+    {
+        printf("Hardware Revision.: %s\n", revision);
+    }
     if(getFWRevision(pBoard, revision, sizeof(revision)) == 0)
-		printf("Firmware Revision.: %s\n", revision);
+    {
+        printf("Firmware Revision.: %s\n", revision);
+    }
 }
 
 /**
@@ -229,10 +256,10 @@ void printBoardInfo(const board_t* pBoard)
  */
 void printAPIVersion()
 {
-	printf(
-		":: PI-Plates C API %s-%s\n"
-		":: Copyright (c) 2016-2017 by B. Eschrich (EoF)\n\n",
-		PP_FULLVERSION_STRING, PP_STATUS_SHORT);
+    printf(
+        ":: PI-Plates C API %s-%s\n"
+        ":: Copyright (c) 2016-2017 by B. Eschrich (EoF)\n\n",
+        PP_FULLVERSION_STRING, PP_STATUS_SHORT);
 }
 
 /**
@@ -240,10 +267,10 @@ void printAPIVersion()
  */
 void getAPIVersionString(char* pVersion, size_t size)
 {
-	if (size > sizeof(PP_FULLVERSION_STRING) + 4)
-	{
-		snprintf(pVersion, size, "%s-%s", PP_FULLVERSION_STRING, PP_STATUS_SHORT);
-	}
+    if(size > sizeof(PP_FULLVERSION_STRING) + 4)
+    {
+        snprintf(pVersion, size, "%s-%s", PP_FULLVERSION_STRING, PP_STATUS_SHORT);
+    }
 }
 
 /**
@@ -251,7 +278,7 @@ void getAPIVersionString(char* pVersion, size_t size)
  */
 version_t* getAPIVersion()
 {
-	return &g_version;
+    return &g_version;
 }
 
 /**
@@ -266,7 +293,7 @@ uint8_t getBoardList(const uint8_t type, board_t** ppResult)
     // invalidate result pointer
     *ppResult = NULL;
 
-    if(verifyBoardType(type) < 0)
+    if(verifyBoardType(type) == 0)
     {
         return 0;
     }
@@ -283,7 +310,7 @@ uint8_t getBoardList(const uint8_t type, board_t** ppResult)
     {
         board = &g_board_list[index];
 
-		// is requested board type?
+        // is requested board type?
         if(board->type == type)
         {
             // firtype One of the predefied board types (RELAY=1, DAQC=2 or MOTOR=3)st time in loop
@@ -298,10 +325,10 @@ uint8_t getBoardList(const uint8_t type, board_t** ppResult)
             boardsFound++;
 
             // finish if max reached
-            if (boardsFound >= PP_MAX_BOARD_COUNT)
-			{
-				break;
-			}
+            if(boardsFound >= PP_MAX_BOARD_COUNT)
+            {
+                break;
+            }
         }
     }
 
@@ -336,7 +363,7 @@ board_t* getBoardByAddress(const uint8_t address)
  */
 uint8_t getBoardCount(const uint8_t type)
 {
-    if(verifyBoardType(type) < 0)
+    if(verifyBoardType(type) == 0)
     {
         return 0;
     }
@@ -353,7 +380,6 @@ uint8_t getBoardCount(const uint8_t type)
     }
     return boardsFound;
 }
-
 
 /**
  * Initialize GPIO/SPI configuration structure to communicate
@@ -574,7 +600,6 @@ int disableFrame(const board_t* board)
     return 0;
 }
 
-
 /**
  * Retrieve the SPI board address. To test a valid board address
  * substract *pAddress - pBoard->config.boardBaseAddress. The result
@@ -584,21 +609,13 @@ int disableFrame(const board_t* board)
  * @param pAddress Pointer to retrieve the SPI board address
  * @return 0 success otherwise signal an error
  */
-uint8_t getAddress(const board_t* pBoard, uint8_t* pAddress)
+int getAddress(const board_t* pBoard, uint8_t* pAddress)
 {
     verifyPointer(pBoard);
     verifyPointer(pAddress);
 
-    int rc = -1;
-
     // reset return
     *pAddress = 0;
-
-    rc = enableFrame(pBoard);
-    if(rc < 0)
-    {
-        return rc;
-    }
 
     board_command_t bc =
     {
@@ -612,66 +629,32 @@ uint8_t getAddress(const board_t* pBoard, uint8_t* pAddress)
         .stopAt0x0 = 0,
     };
 
-    rc = spiCommand(&bc);
-    if(rc < 0)
-    {
-        disableFrame(pBoard);
-        return rc;
-    }
-
-    rc = disableFrame(pBoard);
-    if(rc < 0)
-    {
-        return rc;
-    }
-
-    return 0;
+    return sendCommand(pBoard, &bc);
 }
 
 /**
  *
  */
-int reset(const board_t* board)
+int reset(const board_t* pBoard)
 {
-    verifyPointer(board);
+    verifyPointer(pBoard);
 
-    if(verifyAddr(board) == 0)
+    if(verifyAddr(pBoard) == 0)
     {
         return -1;
     }
 
-    int rc;
-
-    rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
-    }
-
     board_command_t bc =
     {
-        .channel = board->config.spiChannel,
-        .address = board->config.boardBaseAddr + board->address,
+        .channel = pBoard->config.spiChannel,
+        .address = pBoard->config.boardBaseAddr + pBoard->address,
         .command = 0x0F,
         .param1 = 0,
         .param2 = 0,
         .size = 0,
     };
 
-    rc = spiCommand(&bc);
-    if(rc < 0)
-    {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
-    }
-
-    return 0;
+    return sendCommand(pBoard, &bc);
 }
 
 /**
@@ -695,12 +678,6 @@ int getHWRevision(const board_t* board, char* revision, const size_t size)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
-    }
-
     uint8_t value = 0;
     board_command_t bc =
     {
@@ -714,17 +691,9 @@ int getHWRevision(const board_t* board, char* revision, const size_t size)
         .stopAt0x0 = 0,
     };
 
-    rc = spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     float whole = (float)(value >> 4);
@@ -755,11 +724,6 @@ int getFWRevision(const board_t* board, char* revision, const size_t size)
         fprintf(stderr, "Buffer size %d to small to return revision.\n", size);
         return -1;
     }
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
-    }
 
     uint8_t value = 0;
     board_command_t bc =
@@ -774,17 +738,9 @@ int getFWRevision(const board_t* board, char* revision, const size_t size)
         .stopAt0x0 = 0,
     };
 
-    rc = spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     float whole = (float)(value >> 4);
@@ -816,12 +772,6 @@ int getID(const board_t* board, char* id, const size_t size)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
-    }
-
     uint8_t result[20];
     memset(result, 0, sizeof(result));
 
@@ -837,21 +787,12 @@ int getID(const board_t* board, char* id, const size_t size)
         .stopAt0x0 = 1,
     };
 
-    rc = spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     snprintf(id, size, "%s", result);
-
     return strlen(id);
 }
 
@@ -916,23 +857,9 @@ int updateLED(const board_t* board, const uint8_t led, const uint8_t state)
         .size = 0,
     };
 
-    int rc = enableFrame(board);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        return rc;
-    }
-
-    rc = spiCommand(&bc);
-    if(rc < 0)
-    {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     return 0;
@@ -958,12 +885,6 @@ int getLEDState(const board_t* board, const uint8_t led, uint8_t* state)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -976,17 +897,9 @@ int getLEDState(const board_t* board, const uint8_t led, uint8_t* state)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     return 0;
@@ -1057,12 +970,6 @@ int updateRelay(const board_t* board, const uint8_t relay, const uint8_t state)
         }
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
-    }
-
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1073,15 +980,7 @@ int updateRelay(const board_t* board, const uint8_t relay, const uint8_t state)
         .size = 0,
     };
 
-    rc = spiCommand(&bc);
-    if(rc < 0)
-    {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
         return -1;
     }
@@ -1108,12 +1007,6 @@ int getRelayState(const board_t* board, uint8_t* state)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     uint8_t result = 0;
     board_command_t bc =
     {
@@ -1127,17 +1020,9 @@ int getRelayState(const board_t* board, uint8_t* state)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     // return relay states
@@ -1207,12 +1092,6 @@ int getProgMemory(const board_t* board, const uint32_t address, char* data, cons
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
-    }
-
     uint8_t result[2];
     board_command_t bc =
     {
@@ -1226,21 +1105,12 @@ int getProgMemory(const board_t* board, const uint32_t address, char* data, cons
         .stopAt0x0 = 0,
     };
 
-    rc = spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     int value = (256 * result[0] + result[1]);
-
     snprintf(data, size, "%02X", value);
 
     return strlen(data);
@@ -1274,12 +1144,6 @@ int getADC(const board_t* board, const uint8_t channel, float* data)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     uint8_t result[2] = {0,0};
     board_command_t bc =
     {
@@ -1293,17 +1157,9 @@ int getADC(const board_t* board, const uint8_t channel, float* data)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     float value;
@@ -1350,12 +1206,6 @@ int getADCall(const board_t* board, const uint8_t channel, float* data, const si
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     uint8_t result[16];
     board_command_t bc =
     {
@@ -1369,17 +1219,9 @@ int getADCall(const board_t* board, const uint8_t channel, float* data, const si
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     uint8_t index;
@@ -1418,12 +1260,6 @@ int getDINbit(const board_t* board, const uint8_t bit, uint8_t* state)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     uint8_t result = 0;
     board_command_t bc =
     {
@@ -1437,17 +1273,9 @@ int getDINbit(const board_t* board, const uint8_t bit, uint8_t* state)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     // return state value
@@ -1475,12 +1303,6 @@ int getDINall(const board_t* board, uint8_t* states)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     uint8_t result[] = {0,0};
     board_command_t bc =
     {
@@ -1494,17 +1316,9 @@ int getDINall(const board_t* board, uint8_t* states)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     // return states value
@@ -1529,12 +1343,6 @@ int enableDINint(const board_t* board, const uint8_t bit, const unsigned char ed
         return -1;
     }
     if(verifyDINchannel(bit) == 0)
-    {
-        return -1;
-    }
-
-    int rc = enableFrame(board);
-    if(rc < 0)
     {
         return -1;
     }
@@ -1566,17 +1374,9 @@ int enableDINint(const board_t* board, const uint8_t bit, const unsigned char ed
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     return 0;
@@ -1602,12 +1402,6 @@ int disableDINint(const board_t* board, const uint8_t bit)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1620,17 +1414,9 @@ int disableDINint(const board_t* board, const uint8_t bit)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     return 0;
@@ -1666,12 +1452,6 @@ int getRange(const board_t* board, const uint8_t channel, const unsigned char un
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1684,7 +1464,12 @@ int getRange(const board_t* board, const uint8_t channel, const unsigned char un
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
+    if(enableFrame(board) != 0)
+    {
+        return -1;
+    }
+
+    int rc = spiCommand(&bc);
     if(rc < 0)
     {
         disableFrame(board);
@@ -1699,17 +1484,16 @@ int getRange(const board_t* board, const uint8_t channel, const unsigned char un
     bc.result = result;
     bc.size = sizeof(result);
 
-    rc= spiCommand(&bc);
+    rc = spiCommand(&bc);
     if(rc < 0)
     {
         disableFrame(board);
         return rc;
     }
 
-    rc = disableFrame(board);
-    if(rc < 0)
+    if(disableFrame(board) != 0)
     {
-        return rc;
+        return -1;
     }
 
     float range = result[0] * 256 + result[1];
@@ -1756,12 +1540,6 @@ int getSWstate(const board_t* board, uint8_t* state)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     uint8_t result = 0;
     board_command_t bc =
     {
@@ -1775,17 +1553,9 @@ int getSWstate(const board_t* board, uint8_t* state)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     // return state value
@@ -1810,12 +1580,6 @@ int enableSWint(const board_t* board)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1828,17 +1592,9 @@ int enableSWint(const board_t* board)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     return 0;
@@ -1860,12 +1616,6 @@ int disableSWint(const board_t* board)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1878,17 +1628,9 @@ int disableSWint(const board_t* board)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     return 0;
@@ -1910,12 +1652,6 @@ int enableSWpower(const board_t* board)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1928,17 +1664,9 @@ int enableSWpower(const board_t* board)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     return 0;
@@ -1960,12 +1688,6 @@ int disableSWpower(const board_t* board)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -1978,17 +1700,9 @@ int disableSWpower(const board_t* board)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     return 0;
@@ -2059,12 +1773,6 @@ int updateDOUT(const board_t* board, const uint8_t bit, const uint8_t state)
         }
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
-    }
-
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -2075,15 +1783,7 @@ int updateDOUT(const board_t* board, const uint8_t bit, const uint8_t state)
         .size = 0,
     };
 
-    rc = spiCommand(&bc);
-    if(rc < 0)
-    {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
         return -1;
     }
@@ -2143,12 +1843,6 @@ int getDOUTbyte(const board_t* board, uint8_t* value)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     uint8_t result = 0;
     board_command_t bc =
     {
@@ -2162,17 +1856,9 @@ int getDOUTbyte(const board_t* board, uint8_t* value)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     // return DOUT bit states
@@ -2208,12 +1894,6 @@ int setPWM(const board_t* board, const uint8_t channel, uint32_t value)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     const uint8_t hibyte = (uint8_t) value >> 8;
     const uint8_t lobyte = (uint8_t) value - (hibyte << 8);
 
@@ -2229,17 +1909,9 @@ int setPWM(const board_t* board, const uint8_t channel, uint32_t value)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     return 0;
@@ -2270,12 +1942,6 @@ int getPWM(const board_t* board, const uint8_t channel, uint32_t* data)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     uint8_t result[2] = {0,0};
 
     board_command_t bc =
@@ -2290,17 +1956,9 @@ int getPWM(const board_t* board, const uint8_t channel, uint32_t* data)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     // return PWM value
@@ -2335,12 +1993,6 @@ int setDAC(const board_t* board, const uint8_t channel, float volts)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     const int16_t value = (int)(volts / board->vcc * 1024);
     const uint8_t hibyte = (uint8_t) value >> 8;
     const uint8_t lobyte = (uint8_t) value- (hibyte << 8);
@@ -2357,17 +2009,9 @@ int setDAC(const board_t* board, const uint8_t channel, float volts)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     return 0;
@@ -2398,12 +2042,6 @@ int getDAC(const board_t* board, const uint8_t channel, float* data)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     uint8_t result[2] = {0,0};
 
     board_command_t bc =
@@ -2418,17 +2056,9 @@ int getDAC(const board_t* board, const uint8_t channel, float* data)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     // return DAC value
@@ -2454,7 +2084,7 @@ int calcDAC(const board_t* board)
     }
 
     float* vcc = &((board_t*) board)->vcc;
-    if(getADC(board, 8, vcc) < 0)
+    if(getADC(board, 8, vcc) != 0)
     {
         return -1;
     }
@@ -2508,12 +2138,6 @@ int updateINT(const board_t* board, const uint8_t state)
         }
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
-    }
-
     board_command_t bc =
     {
         .channel = board->config.spiChannel,
@@ -2524,15 +2148,7 @@ int updateINT(const board_t* board, const uint8_t state)
         .size = 0,
     };
 
-    rc = spiCommand(&bc);
-    if(rc < 0)
-    {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
         return -1;
     }
@@ -2576,12 +2192,6 @@ int getINTflags(const board_t* board, uint16_t* flags)
         return -1;
     }
 
-    int rc = enableFrame(board);
-    if(rc < 0)
-    {
-        return -1;
-    }
-
     uint8_t result[2] = {0,0};
 
     board_command_t bc =
@@ -2596,17 +2206,9 @@ int getINTflags(const board_t* board, uint16_t* flags)
         .stopAt0x0 = 0,
     };
 
-    rc= spiCommand(&bc);
-    if(rc < 0)
+    if(sendCommand(board, &bc) != 0)
     {
-        disableFrame(board);
-        return rc;
-    }
-
-    rc = disableFrame(board);
-    if(rc < 0)
-    {
-        return rc;
+        return -1;
     }
 
     // return value of interrupt flags
