@@ -603,8 +603,8 @@ int disableFrame(const board_t* pBoard)
 /**
  * Retrieve the SPI board address. To test a valid board address
  * substract *pAddress - pBoard->config.boardBaseAddress. The result
- * must be zero. That indicate that the given board address in the
- * address field of the board_t structure is valid.
+ * must the same as pBoard->address. That indicate that the given board
+ * address in the address field of the board_t structure is valid.
  * @param pBoard Handle of the PI-Plates board
  * @param pAddress Pointer to retrieve the SPI board address
  * @return 0 success otherwise signal an error

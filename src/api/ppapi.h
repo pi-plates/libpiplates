@@ -50,6 +50,12 @@
 #define BIT7_STATE_ON			0x40
 #define BIT8_STATE_ON			0x80
 
+/* Interrupt edge flags */
+#define PP_INT_EDGE_RAISE		'R'
+#define PP_INT_EDGE_FALLING		'F'
+#define PP_INT_EDGE_BOTH		'B'
+
+
 /**
  * PI-Plates GPIO pin and board base address
  */
@@ -199,8 +205,8 @@ int disableFrame(const board_t* pBoard);
 /**
  * Retrieve the SPI board address. To test a valid board address
  * substract *pAddress - pBoard->config.boardBaseAddress. The result
- * must be zero. That indicate that the given board address in the
- * address field of the board_t structure is valid.
+ * must the same as pBoard->address. That indicate that the given board
+ * address in the address field of the board_t structure is valid.
  * @param pBoard Handle of the PI-Plates board
  * @param pAddress Pointer to retrieve the SPI board address
  * @return 0 success otherwise signal an error

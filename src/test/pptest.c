@@ -1,6 +1,6 @@
 /*
  ============================================================================
- Name        : rpi-control.c
+ Name        : pptest.c
  Author      : B. Eschrich
  Version     : 1.00
  Copyright   : Copyright (c) 2016-2017 by B. Eschrich (EoF)
