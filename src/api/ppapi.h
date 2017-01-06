@@ -7,6 +7,23 @@
  Description : PI-Plates RELAYplate API
  ============================================================================
  */
+
+/*
+Definitions:
+    Address (addr): DAQCplates have jumpers on the board that allow
+			their address to be set to a value between 0 and 7.
+    ADC 	(analog to digital converter) channels can be 0 through 8 for a
+			total of 9 channels. Reading channel 8 will return the power supply
+			voltage.
+    DIN 	(digital input) bit values can be 0 through 7 for a total of 8 bits
+    DOUT 	(digital output) bit values can be 0 through 6 for a total of 7 bits
+    PWM 	(pulse width modulator) channels can be 0 or 1 for a total of 2
+			channels. The output values can be between 0 and 1023.
+    DAC 	(digital to analog converter) channels can be 0 or 1 for a total of
+			2 channels. The output value can be between 0 and 4.096 volts
+    LED 	(led) values can be 0 for the red LED or 1 for the green.
+ */
+
 #ifndef _ppapi_h
 #define _ppapi_h
 
@@ -21,6 +38,7 @@
 // generic operation delay
 #define PP_DELAY 1000
 
+// Board types
 #define PP_BOARD_TYPE_RELAY 1
 #define PP_BOARD_TYPE_DAQC 2
 #define PP_BOARD_TYPE_MOTOR 3
@@ -28,19 +46,19 @@
 // Maximum of available PI-Plates board types
 #define PP_MAX_BOARD_TYPES 3
 
-// Maximum of possible PI-Plates boards connected
+// Maximum list size of possible connected PI-Plates boards
 #define PP_MAX_BOARD_LIST_SIZE (sizeof(board_t) * (PP_MAX_BOARD_COUNT * PP_MAX_BOARD_TYPES))
 
-/* PI-Plates - RELAYPlate constants */
+// PI-Plates - RELAYPlate constants
 #define MAX_RELAYS 				8
 
-/* Relay and LED States */
+// Relay or LED update modes
 #define STATE_OFF	 			0x00
 #define STATE_ON 				0x01
 #define STATE_TOGGLE 			0x02
 #define STATE_ALL				0x03
 
-/* Bit ON states */
+// Bit ON states
 #define BIT1_STATE_ON			0x01
 #define BIT2_STATE_ON			0x02
 #define BIT3_STATE_ON			0x04
@@ -50,11 +68,10 @@
 #define BIT7_STATE_ON			0x40
 #define BIT8_STATE_ON			0x80
 
-/* Interrupt edge flags */
+// Interrupt edge flags
 #define PP_INT_EDGE_RAISE		'R'
 #define PP_INT_EDGE_FALLING		'F'
 #define PP_INT_EDGE_BOTH		'B'
-
 
 /**
  * PI-Plates GPIO pin and board base address
@@ -79,7 +96,6 @@ struct config
      */
     uint8_t spiChannel;
 };
-
 typedef struct config config_t;
 
 /**
@@ -104,7 +120,6 @@ struct board
      */
     float vcc;
 };
-
 typedef struct board board_t;
 
 /* API Version */
@@ -115,7 +130,6 @@ struct version
     const long build;
     const long revision;
 };
-
 typedef struct version version_t;
 
 /**
@@ -214,22 +228,22 @@ int disableFrame(const board_t* pBoard);
 int getAddress(const board_t* pBoard, uint8_t* pData);
 
 /**
- *
+ * Reset the RELAYplate board and switch all relays off
  */
 int reset(const board_t* pBoard);
 
 /**
- *
+ * Return HW revision in byte format
  */
 int getHWRevision(const board_t* pBoard, char* pData, const size_t size);
 
 /**
- *
+ * Return FW revision in byte format
  */
 int getFWRevision(const board_t* pBoard, char* pData, const size_t size);
 
 /**
- *
+ * Return Pi-Plate descriptor string
  */
 int getID(const board_t* pBoard, char* pData, const size_t size);
 
@@ -239,12 +253,12 @@ int getID(const board_t* pBoard, char* pData, const size_t size);
 int getProgMemory(const board_t* pBoard, const uint32_t address, char* pData, const size_t size);
 
 /**
- *
+ * Update the state of the board LED
  */
 int updateLED(const board_t* pBoard, const uint8_t led, const uint8_t state);
 
 /**
- *
+ * Return the state of the board LED
  */
 int getLEDState(const board_t* pBoard, const uint8_t led, uint8_t* pData);
 
@@ -253,32 +267,36 @@ int getLEDState(const board_t* pBoard, const uint8_t led, uint8_t* pData);
  ********************************************************************/
 
 /**
- *
+ * Update the relay state. Parameter state can be value of:
+ * 	 STATE_OFF		Single relay off
+ * 	 STATE_ON		Single relay on
+ * 	 STATE_TOGGLE   Toggle single relay
+ *	 STATE_ALL		Update all relays at once
  */
 int updateRelay(const board_t* pBoard, const uint8_t relay, const uint8_t state);
 
 /**
- *
+ * Switch a single relay on
  */
 int relayON(const board_t* pBoard, const uint8_t relay);
 
 /**
- *
+ * Switch a single relay off
  */
 int relayOFF(const board_t* pBoard, const uint8_t relay);
 
 /**
- *
+ * Toggle a single relay
  */
 int toggleRelay(const board_t* pBoard, const uint8_t relay);
 
 /**
- *
+ * Update the relay states at once.
  */
 int updateRelays(const board_t* pBoard, const uint8_t mask);
 
 /**
- *
+ * Get all relay states
  */
 int getRelayState(const board_t* pBoard, uint8_t* pData);
 
@@ -292,137 +310,158 @@ int getRelayState(const board_t* pBoard, uint8_t* pData);
 int getProgMemory(const board_t* pBoard, const uint32_t address, char* pData, const size_t size);
 
 /**
- *
+ * Return voltage from single channel
  */
 int getADC(const board_t* pBoard, const uint8_t channel, float* pData);
 
 /**
- *
+ * Return voltages from all channels
  */
-int getADCall(const board_t* pBoard, const uint8_t channel, float* pData, const size_t size);
+int getADCall(const board_t* pBoard, float data[], const size_t size);
 
 /**
- *
+ * Return single bit value
  */
 int getDINbit(const board_t* pBoard, const uint8_t bit, uint8_t* pData);
 
 /**
- *
+ * Return all eight bits
  */
 int getDINall(const board_t* pBoard, uint8_t* pData);
 
 /**
- *
+ * Enable interrupts for an input change on the specified bit.
+ * The "edge" value can be 'r' for rising, 'f' for falling,
+ * or 'b' for both.
  */
 int enableDINint(const board_t* pBoard, const uint8_t bit, const unsigned char edge);
 
 /**
- *
+ * Disable interrupts on the specified bit
  */
 int disableDINint(const board_t* pBoard, const uint8_t bit);
 
 /**
- *
+ * Reads distance from an HC-SR04 ultrasonic sensor. The channel argument
+ * calls out the value of the digital input / digital output pair required
+ * to interface to the sensor. The units can 'i' for inches or 'c'
+ * for centimetres.
  */
 int getRange(const board_t* pBoard, const uint8_t channel, const unsigned char units, float* pData);
 
 /**
- *
+ * Returns current state of on board switch. A value of 1 is
+ * returned when the switch is up and a value of 0 is returned
+ * when it's down.
  */
 int getSWstate(const board_t* pBoard, uint8_t* pData);
 
 /**
- *
+ * Allows the switch to generate an interrupts when pressed.
+ * Global interrupts must be enabled before using this function.
  */
 int enableSWint(const board_t* pBoard);
 
 /**
- *
+ * Blocks push button on board from generating an interrupt.
  */
 int disableSWint(const board_t* pBoard);
 
 /**
- *
+ * Pushing button on board will short RPI GPIO23 to
+ * GND and then remove 5VDC 45 seconds later.
+ * Note that this setting is saved in nonvolatile memory
+ * and only has to be performed once
  */
 int enableSWpower(const board_t* pBoard);
 
 /**
- *
+ * Disables the above. Note that this setting is stored
+ * in nonvolatile memory and only has to be performed once.
  */
 int disableSWpower(const board_t* pBoard);
 
 /**
- *
+ * Update the digitial output. Parameter state can be value of:
+ * 	 STATE_OFF		Single bit off
+ * 	 STATE_ON		Single bit on
+ * 	 STATE_TOGGLE   Toggle single bit
+ *	 STATE_ALL		Update all digital outputs
  */
 int updateDOUT(const board_t* pBoard, const uint8_t bit, const uint8_t state);
 
 /**
- *
+ * Set single bit
  */
 int digitalOutON(const board_t* pBoard, const uint8_t bit);
 
 /**
- *
+ * Clear single bit
  */
 int digitalOutOFF(const board_t* pBoard, const uint8_t bit);
 
 /**
- *
+ * Toggle a single bit
  */
 int digitalOutToggle(const board_t* pBoard, const uint8_t bit);
 
 /**
- *
+ * Set all the bits a once. Bit mask must be 127 or less.
  */
-int setDigitalOut(const board_t* pBoard, const uint8_t bitMask);
+int setDigitalOut(const board_t* pBoard, const uint8_t mask);
 
 /**
- *
+ * Return the state byte of the digital output
  */
 int getDOUTbyte(const board_t* pBoard, uint8_t* pData);
 
 /**
- *
+ * Set PWM duty cycle from 0 to 1023 (0 to 100%)
  */
 int setPWM(const board_t* pBoard, const uint8_t channel, uint32_t value);
 
 /**
- *
+ * Return current PWM setting.
  */
 int getPWM(const board_t* pBoard, const uint8_t channel, uint32_t* pData);
 
 /**
- *
+ * Set DAC output voltage to 0 to 4.097 volts.
  */
 int setDAC(const board_t* pBoard, const uint8_t channel, float value);
 
 /**
- *
+ * Return current DAC output voltage.
  */
 int getDAC(const board_t* pBoard, const uint8_t channel, float* pData);
 
 /**
- *
+ * Calibrate the DAC outputs. Use this function if you are
+ * unsure about the quality of your power supply.
  */
 int calcDAC(const board_t* pBoard);
 
 /**
- *
+ * Enable or disable interrupts from the DAQC.
+ * Parameter state can be value of:
+ * 	 STATE_OFF Interrupts off
+ * 	 STATE_ON  Interrupts on
  */
 int updateINT(const board_t* pBoard, const uint8_t state);
 
 /**
- *
+ * Enable interrupts from the DAQC. GPIO22 will be pulled low
+ * if an enabled event occurs.
  */
 int enableINT(const board_t* pBoard);
 
 /**
- *
+ * Disables and clears all interrupts on the DAQC.
  */
 int disableINT(const board_t* pBoard);
 
 /**
- *
+ * Returns 16 bit flag value then clears all INT flags
  */
 int getINTflags(const board_t* pBoard, uint16_t* pFlags);
 

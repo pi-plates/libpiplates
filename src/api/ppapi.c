@@ -1180,7 +1180,7 @@ int getADC(const board_t* pBoard, const uint8_t channel, float* data)
 /**
  *
  */
-int getADCall(const board_t* pBoard, const uint8_t channel, float* data, const size_t size)
+int getADCall(const board_t* pBoard, float data[], const size_t size)
 {
     verifyPointer(pBoard);
     verifyPointer(data);
@@ -1193,10 +1193,6 @@ int getADCall(const board_t* pBoard, const uint8_t channel, float* data, const s
         return -1;
     }
     if(verifyAddr(pBoard) == 0)
-    {
-        return -1;
-    }
-    if(verifyAINchannel(channel) == 0)
     {
         return -1;
     }

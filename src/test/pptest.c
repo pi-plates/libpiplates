@@ -383,24 +383,14 @@ int testDAQCBoard()
     int i;
     float adcAll[8];
 
-    if(getADCall(board, 0, adcAll, sizeof(adcAll)) < 0)
+    if(getADCall(board, adcAll, sizeof(adcAll)) < 0)
     {
-        pabort("getADCall(0) failed");
+        pabort("getADCall failed");
         return EXIT_FAILURE;
     }
     for(i = 0; i < 8; i++)
     {
-        printf("ADC(0)[%d]........: %2.2f\n", i, adcAll[i]);
-    }
-
-    if(getADCall(board, 1, adcAll, sizeof(adcAll)) < 0)
-    {
-        pabort("getADCall(1) failed");
-        return EXIT_FAILURE;
-    }
-    for(i = 0; i < 8; i++)
-    {
-        printf("ADC(1)[%d]........: %2.2f\n", i, adcAll[i]);
+        printf("ADC[%d]...........: %2.2f\n", i, adcAll[i]);
     }
 
     //--
