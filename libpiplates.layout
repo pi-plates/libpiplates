@@ -1,24 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="pptest_debug" />
-	<File name="src/version.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="301" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="README.md" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="613" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src/api/spiops.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="370" topLine="0" />
-		</Cursor>
-	</File>
+	<ActiveTarget name="pptest_release" />
 	<File name="src/test/pptest.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="5949" topLine="242" />
+			<Cursor1 position="9188" topLine="369" />
 		</Cursor>
 	</File>
 	<File name="src/api/spiops.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -26,15 +11,30 @@
 			<Cursor1 position="2002" topLine="231" />
 		</Cursor>
 	</File>
-	<File name="src/api/ppapi.h" open="0" top="0" tabpos="2" split="2" active="1" splitpos="32" zoom_1="0" zoom_2="0">
+	<File name="src/api/ppapi.h" open="0" top="0" tabpos="2" split="2" active="2" splitpos="32" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="8937" topLine="0" />
-			<Cursor2 position="2458" topLine="230" />
+			<Cursor1 position="11854" topLine="0" />
+			<Cursor2 position="12174" topLine="423" />
 		</Cursor>
 	</File>
 	<File name="src/api/ppapi.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="14613" topLine="601" />
+			<Cursor1 position="25543" topLine="1175" />
+		</Cursor>
+	</File>
+	<File name="README.md" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="613" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src/version.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="301" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src/api/spiops.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="370" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
