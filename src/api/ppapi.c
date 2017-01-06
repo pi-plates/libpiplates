@@ -978,6 +978,7 @@ int updateRelay(const board_t* pBoard, const uint8_t relay, const uint8_t state)
         .param1 = relay,
         .param2 = 0,
         .size = 0,
+        .stopAt0x0 = 0,
     };
 
     if(sendCommand(pBoard, &bc) != 0)
@@ -1299,7 +1300,6 @@ int getDINall(const board_t* pBoard, uint8_t* states)
         return -1;
     }
 
-    uint8_t result[] = {0,0};
     board_command_t bc =
     {
         .channel = pBoard->config.spiChannel,
@@ -1307,8 +1307,8 @@ int getDINall(const board_t* pBoard, uint8_t* states)
         .command = 0x25,
         .param1 = 0,
         .param2 = 0,
-        .result = result,
-        .size = sizeof(result),
+        .result = states,
+        .size = sizeof(uint8_t),
         .stopAt0x0 = 0,
     };
 
@@ -1316,9 +1316,6 @@ int getDINall(const board_t* pBoard, uint8_t* states)
     {
         return -1;
     }
-
-    // return states value
-    *states = result[0];
 
     return 0;
 }

@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="pptest_release" />
+	<File name="src/api/spiops.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="370" topLine="0" />
+		</Cursor>
+	</File>
 	<File name="src/test/pptest.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="9188" topLine="369" />
@@ -19,7 +24,7 @@
 	</File>
 	<File name="src/api/ppapi.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="25543" topLine="1175" />
+			<Cursor1 position="21832" topLine="1483" />
 		</Cursor>
 	</File>
 	<File name="README.md" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -30,11 +35,6 @@
 	<File name="src/version.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="301" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src/api/spiops.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="370" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>
