@@ -49,8 +49,11 @@ Definitions:
 // Maximum list size of possible connected PI-Plates boards
 #define PP_MAX_BOARD_LIST_SIZE (sizeof(board_t) * (PP_MAX_BOARD_COUNT * PP_MAX_BOARD_TYPES))
 
-// PI-Plates - RELAYPlate constants
-#define MAX_RELAYS 				8
+// PI-Plates - Maximum I/O
+#define PP_MAX_RELAYS 			8
+#define PP_MAX_DIGITAL_IN		8
+#define PP_MAX_ANALOG_IN		8
+#define PP_MAX_DIGITAL_OUT		7
 
 // Relay or LED update modes
 #define STATE_OFF	 			0x00

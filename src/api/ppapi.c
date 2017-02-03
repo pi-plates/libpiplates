@@ -67,7 +67,7 @@ static int verifyBoardType(const uint8_t type)
  */
 static int verifyRelay(const uint8_t relay)
 {
-    if((relay >= 1) && (relay < MAX_RELAYS))
+    if((relay >= 1) && (relay < PP_MAX_RELAYS))
     {
         return 1;
     }
@@ -141,7 +141,7 @@ static int boardAllowed(const board_t* pBoard, const uint8_t type)
  */
 static int verifyDINchannel(const uint8_t channel)
 {
-    if((channel >= 0) && (channel <= 7))
+    if((channel >= 0) && (channel < PP_MAX_DIGITAL_IN))
     {
         return 1;
     }
@@ -155,7 +155,7 @@ static int verifyDINchannel(const uint8_t channel)
  */
 static int verifyAINchannel(const uint8_t channel)
 {
-    if((channel >= 0) && (channel <= 8))
+    if((channel >= 0) && (channel <= PP_MAX_ANALOG_IN))
     {
         return 1;
     }
@@ -169,7 +169,7 @@ static int verifyAINchannel(const uint8_t channel)
  */
 static int verifyDOUTchannel(const uint8_t channel)
 {
-    if((channel >= 0) && (channel <= 6))
+    if((channel >= 0) && (channel < PP_MAX_DIGITAL_OUT))
     {
         return 1;
     }
@@ -1317,6 +1317,11 @@ int getDINall(const board_t* pBoard, uint8_t* states)
         return -1;
     }
 
+    // digitial input must be set to GND to signala an input.
+    // If noting is set all 8 bits are high. So we negate.
+    uint8_t value = (*states);
+    *states =~ value;
+
     return 0;
 }
 
@@ -1986,7 +1991,7 @@ int setDAC(const board_t* pBoard, const uint8_t channel, float volts)
         return -1;
     }
 
-    const int16_t value = (int)(volts / pBoard->vcc * 1024);
+    const int16_t value = (int)(volts / (pBoard->vcc * 1024));
     const uint8_t hibyte = (uint8_t) value >> 8;
     const uint8_t lobyte = (uint8_t) value- (hibyte << 8);
 
@@ -2055,7 +2060,7 @@ int getDAC(const board_t* pBoard, const uint8_t channel, float* data)
     }
 
     // return DAC value
-    *data = (256 * result[0] + result[1]) * (pBoard->vcc / 1023);
+    *data = (256 * (result[0] + result[1])) * (pBoard->vcc / 1023);
 
     return 0;
 }
