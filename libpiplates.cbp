@@ -3,10 +3,11 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="libpiplates" />
+		<Option makefile="makefile" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
+			<Target title="debug_lib_tux">
 				<Option output="Debug/piplates" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Debug/" />
 				<Option type="3" />
@@ -19,7 +20,7 @@
 					<Add option="-D_T_RACE_SPI_OPS_" />
 				</Compiler>
 			</Target>
-			<Target title="pptest_debug">
+			<Target title="debug_pptest_tux">
 				<Option output="Debug/pptest" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Debug/" />
 				<Option additional_output="Debug/libpiplates.so;" />
@@ -36,7 +37,7 @@
 					<Add library="Debug/libpiplates.so" />
 				</Linker>
 			</Target>
-			<Target title="Release">
+			<Target title="release_lib_tux">
 				<Option output="Release/piplates" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Release/" />
 				<Option type="3" />
@@ -50,7 +51,7 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
-			<Target title="pptest_release">
+			<Target title="release_pptest_tux">
 				<Option output="Release/pptest" prefix_auto="1" extension_auto="1" />
 				<Option object_output="Release/" />
 				<Option type="1" />
@@ -73,20 +74,20 @@
 		<Unit filename="README.md" />
 		<Unit filename="src/api/ppapi.c">
 			<Option compilerVar="CC" />
-			<Option target="Debug" />
-			<Option target="Release" />
+			<Option target="debug_lib_tux" />
+			<Option target="release_lib_tux" />
 		</Unit>
 		<Unit filename="src/api/ppapi.h" />
 		<Unit filename="src/api/spiops.c">
 			<Option compilerVar="CC" />
-			<Option target="Debug" />
-			<Option target="Release" />
+			<Option target="debug_lib_tux" />
+			<Option target="release_lib_tux" />
 		</Unit>
 		<Unit filename="src/api/spiops.h" />
 		<Unit filename="src/test/pptest.c">
 			<Option compilerVar="CC" />
-			<Option target="pptest_debug" />
-			<Option target="pptest_release" />
+			<Option target="debug_pptest_tux" />
+			<Option target="release_pptest_tux" />
 		</Unit>
 		<Unit filename="src/version.h" />
 		<Extensions>

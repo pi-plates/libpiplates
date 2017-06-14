@@ -76,6 +76,10 @@ Definitions:
 #define PP_INT_EDGE_FALLING		'F'
 #define PP_INT_EDGE_BOTH		'B'
 
+// DAC/PWM Output
+#define PP_MAX_DAC_VOLT			4.59f 	//4.095f
+#define PP_MAX_DAC_BITRES		1023
+
 /**
  * PI-Plates GPIO pin and board base address
  */
@@ -419,14 +423,14 @@ int setDigitalOut(const board_t* pBoard, const uint8_t mask);
 int getDOUTbyte(const board_t* pBoard, uint8_t* pData);
 
 /**
- * Set PWM duty cycle from 0 to 1023 (0 to 100%)
+ * Set PWM duty cycle from 0 to 100% (makes value 0 to 1023)
  */
-int setPWM(const board_t* pBoard, const uint8_t channel, uint32_t value);
+int setPWM(const board_t* pBoard, const uint8_t channel, float value);
 
 /**
  * Return current PWM setting.
  */
-int getPWM(const board_t* pBoard, const uint8_t channel, uint32_t* pData);
+int getPWM(const board_t* pBoard, const uint8_t channel, float* pData);
 
 /**
  * Set DAC output voltage to 0 to 4.097 volts.
@@ -442,7 +446,7 @@ int getDAC(const board_t* pBoard, const uint8_t channel, float* pData);
  * Calibrate the DAC outputs. Use this function if you are
  * unsure about the quality of your power supply.
  */
-int calcDAC(const board_t* pBoard);
+int readBoardVcc(board_t* pBoard);
 
 /**
  * Enable or disable interrupts from the DAQC.

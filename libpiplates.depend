@@ -1,1 +1,81 @@
 # depslib dependency file v1.0
+1485091423 source:p:\home\pi\projects\libpiplates\src\api\ppapi.c
+	<ctype.h>
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string.h>
+	<unistd.h>
+	<math.h>
+	<errno.h>
+	<wiringPi.h>
+	"../version.h"
+	"spiops.h"
+	"ppapi.h"
+
+1485091423 
+
+1485091436 p:\home\pi\projects\libpiplates\src\version.h
+
+1483033067 p:\home\pi\projects\libpiplates\src\api\spiops.h
+
+1485091415 p:\home\pi\projects\libpiplates\src\api\ppapi.h
+
+1483044953 source:p:\home\pi\projects\libpiplates\src\api\spiops.c
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<stddef.h>
+	<stdarg.h>
+	<string.h>
+	<unistd.h>
+	<assert.h>
+	<fcntl.h>
+	<errno.h>
+	<time.h>
+	<sys/ioctl.h>
+	<linux/types.h>
+	<linux/spi/spidev.h>
+	<wiringPiSPI.h>
+	"spiops.h"
+
+1483044953 
+
+1497342076 source:/home/pi/Projects/libpiplates/src/api/ppapi.c
+	<ctype.h>
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<string.h>
+	<unistd.h>
+	<math.h>
+	<errno.h>
+	<wiringPi.h>
+	"../version.h"
+	"spiops.h"
+	"ppapi.h"
+
+1497342807 /home/pi/Projects/libpiplates/src/version.h
+
+1483033067 /home/pi/Projects/libpiplates/src/api/spiops.h
+
+1497342738 /home/pi/Projects/libpiplates/src/api/ppapi.h
+
+1483044953 source:/home/pi/Projects/libpiplates/src/api/spiops.c
+	<stdio.h>
+	<stdlib.h>
+	<stdint.h>
+	<stddef.h>
+	<stdarg.h>
+	<string.h>
+	<unistd.h>
+	<assert.h>
+	<fcntl.h>
+	<errno.h>
+	<time.h>
+	<sys/ioctl.h>
+	<linux/types.h>
+	<linux/spi/spidev.h>
+	<wiringPiSPI.h>
+	"spiops.h"
+

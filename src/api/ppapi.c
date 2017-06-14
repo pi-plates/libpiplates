@@ -521,7 +521,7 @@ int initBoards(uint8_t type, const config_t* pConfig)
                 // measure real VCC value
                 while(1)
                 {
-                    if(calcDAC(&g_board_list[i]) < 0)
+                    if(readBoardVcc(&g_board_list[i]) < 0)
                     {
                         return -1;
                     }
@@ -1167,6 +1167,7 @@ int getADC(const board_t* pBoard, const uint8_t channel, float* data)
 
     value = (256 * result[0] + result[1]);
     value = round(value * 4.096f / 1024);
+
     if(channel == 8)
     {
         value = value * 2.0f;
@@ -1869,8 +1870,12 @@ int getDOUTbyte(const board_t* pBoard, uint8_t* value)
 // PWM and DAC Output Functions
 // ============================================
 
-int setPWM(const board_t* pBoard, const uint8_t channel, uint32_t value)
+int setPWM(const board_t* pBoard, const uint8_t channel, float value)
 {
+	uint16_t digval;
+    uint8_t hibyte = 0;
+    uint8_t lobyte = 0;
+
     verifyPointer(pBoard);
 
     if(boardAllowed(pBoard, PP_BOARD_TYPE_DAQC) == 0)
@@ -1886,14 +1891,16 @@ int setPWM(const board_t* pBoard, const uint8_t channel, uint32_t value)
         fprintf(stderr, "ERROR: PWM channel %d must be 0 or 1\n", channel);
         return -1;
     }
-    if(value < 0 || value > 1023)
+    if(value < 0 || value > 100)
     {
-        fprintf(stderr, "ERROR: PWM value %d out of range - must be between 0 and 1023\n", value);
+        fprintf(stderr, "ERROR: PWM value %f out of range - must be between 0 and 100%%\n", value);
         return -1;
     }
-
-    const uint8_t hibyte = (uint8_t) value >> 8;
-    const uint8_t lobyte = (uint8_t) value - (hibyte << 8);
+    if (value > 0.0f) {
+		digval = round(value * PP_MAX_DAC_BITRES / 100);
+		hibyte = digval >> 8;
+		lobyte = digval - (hibyte << 8);
+    }
 
     board_command_t bc =
     {
@@ -1918,13 +1925,16 @@ int setPWM(const board_t* pBoard, const uint8_t channel, uint32_t value)
 /**
  *
  */
-int getPWM(const board_t* pBoard, const uint8_t channel, uint32_t* data)
+int getPWM(const board_t* pBoard, const uint8_t channel, float* data)
 {
+    uint8_t result[2] = {0, 0};
+    uint16_t digval;
+
     verifyPointer(pBoard);
     verifyPointer(data);
 
     // reset return
-    *data = 0;
+    *data = 0.0f;
 
     if(boardAllowed(pBoard, PP_BOARD_TYPE_DAQC) == 0)
     {
@@ -1939,8 +1949,6 @@ int getPWM(const board_t* pBoard, const uint8_t channel, uint32_t* data)
         fprintf(stderr, "ERROR: PWM channel %d must be 0 or 1\n", channel);
         return -1;
     }
-
-    uint8_t result[2] = {0,0};
 
     board_command_t bc =
     {
@@ -1960,7 +1968,8 @@ int getPWM(const board_t* pBoard, const uint8_t channel, uint32_t* data)
     }
 
     // return PWM value
-    *data = (256 * result[0] + result[1]);
+    digval = 256 * result[0] + result[1];
+	*data = (digval * 100 / PP_MAX_DAC_BITRES);
 
     return 0;
 }
@@ -1968,8 +1977,13 @@ int getPWM(const board_t* pBoard, const uint8_t channel, uint32_t* data)
 /**
  *
  */
-int setDAC(const board_t* pBoard, const uint8_t channel, float volts)
+int setDAC(const board_t* pBoard, const uint8_t channel, float volt)
 {
+	float percent;
+	uint16_t digval;
+    uint8_t hibyte = 0;
+    uint8_t lobyte = 0;
+
     verifyPointer(pBoard);
 
     if(boardAllowed(pBoard, PP_BOARD_TYPE_DAQC) == 0)
@@ -1985,15 +1999,24 @@ int setDAC(const board_t* pBoard, const uint8_t channel, float volts)
         fprintf(stderr, "ERROR: DAC channel %d must be 0 or 1\n", channel);
         return -1;
     }
-    if(volts < 0.0f || volts > 4.095f)
+    if(volt < 0.0f || volt > PP_MAX_DAC_VOLT)
     {
-        fprintf(stderr, "ERROR: PWM value %f out of range - must be between 0 and 4.095 volts\n", volts);
+        fprintf(stderr, "ERROR: DAC value %f out of range - must be between 0 and %3.4f volts\n",
+				volt, PP_MAX_DAC_VOLT);
+        return -1;
+    }
+    if(pBoard->vcc == 0.0f)
+    {
+        fprintf(stderr, "ERROR: Board Vcc value is zero!\n");
         return -1;
     }
 
-    const int16_t value = (int)(volts / (pBoard->vcc * 1024));
-    const uint8_t hibyte = (uint8_t) value >> 8;
-    const uint8_t lobyte = (uint8_t) value- (hibyte << 8);
+	if (volt > 0.0f) {
+		percent = volt * 100.0f / PP_MAX_DAC_VOLT;
+		digval = round(percent * PP_MAX_DAC_BITRES / 100);
+		hibyte = digval >> 8;
+		lobyte = digval - (hibyte << 8);
+	}
 
     board_command_t bc =
     {
@@ -2020,6 +2043,10 @@ int setDAC(const board_t* pBoard, const uint8_t channel, float volts)
  */
 int getDAC(const board_t* pBoard, const uint8_t channel, float* data)
 {
+    uint8_t result[2] = {0,0};
+	uint16_t digval;
+	float value;
+
     verifyPointer(pBoard);
     verifyPointer(data);
 
@@ -2039,8 +2066,11 @@ int getDAC(const board_t* pBoard, const uint8_t channel, float* data)
         fprintf(stderr, "ERROR: DAC channel %d must be 0 or 1\n", channel);
         return -1;
     }
-
-    uint8_t result[2] = {0,0};
+    if(pBoard->vcc == 0.0f)
+    {
+        fprintf(stderr, "ERROR: Board Vcc value is zero!\n");
+        return -1;
+    }
 
     board_command_t bc =
     {
@@ -2060,7 +2090,10 @@ int getDAC(const board_t* pBoard, const uint8_t channel, float* data)
     }
 
     // return DAC value
-    *data = (256 * (result[0] + result[1])) * (pBoard->vcc / 1023);
+    digval = 256 * result[0] + result[1];
+    value = digval * 100 / PP_MAX_DAC_BITRES;
+
+    *data = value * PP_MAX_DAC_VOLT / 100;
 
     return 0;
 }
@@ -2068,7 +2101,7 @@ int getDAC(const board_t* pBoard, const uint8_t channel, float* data)
 /**
  *
  */
-int calcDAC(const board_t* pBoard)
+int readBoardVcc(board_t* pBoard)
 {
     verifyPointer(pBoard);
 
@@ -2081,11 +2114,13 @@ int calcDAC(const board_t* pBoard)
         return -1;
     }
 
-    float* vcc = &((board_t*) pBoard)->vcc;
-    if(getADC(pBoard, 8, vcc) != 0)
+    float value = 0.0f;
+    if(getADC(pBoard, 8, &value) != 0)
     {
         return -1;
     }
+
+    pBoard->vcc = value;
 
     return 0;
 }

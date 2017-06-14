@@ -101,7 +101,7 @@ static int testRelayBoard()
     uint8_t state;
     int relay = 4;
 
-    for(relay = 1; relay < MAX_RELAYS; relay++)
+    for(relay = 1; relay < PP_MAX_RELAYS; relay++)
     {
         printf("Switch ON  relay #%d ", relay);
         if(relayON(board, relay) < 0)
@@ -232,12 +232,12 @@ int testDAQCBoard()
     }
     printf("Firmware Revision: %s\n", revision);
 
-    if(calcDAC(board) < 0)
+    if(readBoardVcc(board) < 0)
     {
         pabort("calDAC() failed.");
         return EXIT_FAILURE;
     }
-    printf("Board VCC........: %2.3f\n", board->vcc);
+    printf("Board VCC........: %3.2f\n", board->vcc);
 
     updateLED(board, 0, STATE_OFF);
     updateLED(board, 1, STATE_OFF);
@@ -276,66 +276,20 @@ int testDAQCBoard()
     printf("Range(0,c).......: %4.2f\n", range);
 
     /*	--> Both calls failing ?!
-    	if (getRange(board, 1, 'i', &range) < 0)
-    	{
-    		pabort("getRange(1, i) failed");
-            return EXIT_FAILURE;
-    	}
-        printf("Range(1,i).......: %4.2f\n", range);
+	if (getRange(board, 1, 'i', &range) < 0)
+	{
+		pabort("getRange(1, i) failed");
+		return EXIT_FAILURE;
+	}
+	printf("Range(1,i).......: %4.2f\n", range);
 
-    	if (getRange(board, 1, 'c', &range) < 0)
-    	{
-    		pabort("getRange(1, c) failed");
-            return EXIT_FAILURE;
-    	}
-        printf("Range(1,c).......: %4.2f\n", range);
+	if (getRange(board, 1, 'c', &range) < 0)
+	{
+		pabort("getRange(1, c) failed");
+		return EXIT_FAILURE;
+	}
+	printf("Range(1,c).......: %4.2f\n", range);
     */
-
-    float data = 0.0f;
-
-    if(getADC(board, 0, &data) < 0)
-    {
-        pabort("getADC(0) failed");
-        return EXIT_FAILURE;
-    }
-    printf("ADC(0)...........: %4.2f volt\n", data);
-
-    if(getADC(board, 1, &data) < 0)
-    {
-        pabort("getADC(1) failed");
-        return EXIT_FAILURE;
-    }
-    printf("ADC(1)...........: %4.2f volt\n", data);
-
-    uint32_t pwm = 0;
-    if(getPWM(board, 0, &pwm) < 0)
-    {
-        pabort("getPWM(0) failed");
-        return EXIT_FAILURE;
-    }
-    printf("PWM(0)...........: %d\n", pwm);
-
-    if(getPWM(board, 1, &pwm) < 0)
-    {
-        pabort("getPWM(1) failed");
-        return EXIT_FAILURE;
-    }
-    printf("PWM(1)...........: %d\n", pwm);
-
-    float dac = 0;
-    if(getDAC(board, 0, &dac) < 0)
-    {
-        pabort("getDAC(0) failed");
-        return EXIT_FAILURE;
-    }
-    printf("DAC(0)...........: %2.2f\n", dac);
-
-    if(getDAC(board, 1, &dac) < 0)
-    {
-        pabort("getDAC(1) failed");
-        return EXIT_FAILURE;
-    }
-    printf("DAC(1)...........: %2.2f\n", dac);
 
     uint8_t dout = BIT2_STATE_ON | BIT5_STATE_ON;
     if(setDigitalOut(board, dout) < 0)
@@ -390,8 +344,76 @@ int testDAQCBoard()
     }
     for(i = 0; i < 8; i++)
     {
-        printf("ADC[%d]...........: %2.2f\n", i, adcAll[i]);
+        printf("ADCall[%d]........: %3.2f\n", i, adcAll[i]);
     }
+
+    float data = 0.0f;
+    for(i = 0; i < 9; i++)
+    {
+		if(getADC(board, i, &data) < 0)
+		{
+			pabort("getADC() failed");
+			return EXIT_FAILURE;
+		}
+        printf("ADC...[%d]........: %3.2f\n", i, data);
+    }
+
+
+    float pwm = 0.0f;
+
+    //80%
+    if(setPWM(board, 0, 80) < 0)
+    {
+        pabort("setPWM(0) failed");
+        return EXIT_FAILURE;
+    }
+    if(getPWM(board, 0, &pwm) < 0)
+    {
+        pabort("getPWM(0) failed");
+        return EXIT_FAILURE;
+    }
+    printf("PWM(0)...........: %3.2f\n", pwm);
+
+	//95%
+    if(setPWM(board, 1, 95) < 0)
+    {
+        pabort("setPWM(1) failed");
+        return EXIT_FAILURE;
+    }
+    if(getPWM(board, 1, &pwm) < 0)
+    {
+        pabort("getPWM(1) failed");
+        return EXIT_FAILURE;
+    }
+    printf("PWM(1)...........: %3.2f\n", pwm);
+
+    float dac = 0.0f;
+
+	// 3.5 Volt
+    if(setDAC(board, 0, 3.5f) < 0)
+    {
+        pabort("setDAC(0) failed");
+        return EXIT_FAILURE;
+    }
+    if(getDAC(board, 0, &dac) < 0)
+    {
+        pabort("getDAC(0) failed");
+        return EXIT_FAILURE;
+    }
+    printf("DAC(0)...........: %3.2f\n", dac);
+
+	//4.0 Volt
+    if(setDAC(board, 1, 4.0f) < 0)
+    {
+        pabort("setDAC(1) failed");
+        return EXIT_FAILURE;
+    }
+    if(getDAC(board, 1, &dac) < 0)
+    {
+        pabort("getDAC(1) failed");
+        return EXIT_FAILURE;
+    }
+    printf("DAC(1)...........: %3.2f\n", dac);
 
     //--
     return EXIT_SUCCESS;
